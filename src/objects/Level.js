@@ -4,12 +4,14 @@ import { ObjCollection } from '../../lib/ObjCollection';
 
 import { Drop } from './Drop';
 import { LevelNumber } from './LevelNumber';
+import { Message } from './Message';
 import { Wall } from './Wall';
 
 class Level {
   constructor (canvas, config, number, restarts, player) {
     config.walls = config.walls || [];
     config.drops = config.drops || [];
+    config.messages = config.messages || [];
     this._canvas = canvas;
     this._config = config;
     this._player = player;
@@ -25,7 +27,15 @@ class Level {
 
     for (let ix = 0; ix < config.walls.length; ix++) {
       let wall = new Wall(canvas, config.walls[ix]);
-      this._objects.add(wall);
+      this._objects.add(wall, null, {collision: true});
+    }
+
+    for (let ix = 0; ix < this._config.messages.length; ix++) {
+      let msg = this._config.messages[ix];
+      if (!msg.restarts || this._restarts >= msg.restarts) {
+        let message = new Message(this._canvas, msg);
+        this._objects.add(message);
+      }
     }
   }
 
@@ -36,14 +46,12 @@ class Level {
       this._timestamp = timestamp;
     }
 
-    this._objects.update(delta, timestamp);
-
     let player = this._player;
     for (var ix = 0; ix < this._objects._objects.length; ix++) {
-      let object = this._objects._objects[ix].obj;
-      if (object.constructor.name === 'LevelNumber') {
+      if (!this._objects._objects[ix].meta.collision) {
         continue;
       }
+      let object = this._objects._objects[ix].obj;
       var collisionLeft = player.pos.x + player.size.w > object.pos.x;
       var collisionRight = player.pos.x < object.pos.x + object.size.w;
       var collisionTop = player.pos.y + player.size.h > object.pos.y;
@@ -52,10 +60,6 @@ class Level {
         player.die();
       }
     }
-  }
-
-  render (delta, timestamp) {
-    this._objects.render(delta, timestamp);
   }
 
   destroy () {

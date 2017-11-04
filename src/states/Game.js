@@ -88,16 +88,9 @@ class Game {
 
   // -- AppObject API
 
-  update (delta, timestamp) {
-    this._objects.update(delta, timestamp);
-  }
-
-  render (delta, timestamp) {
-    this._objects.render(delta, timestamp);
-  }
-
   destroy () {
-    this._objects.destroyOne();
+    document.removeEventListener('keydown', this._handleDocKeyDown);
+    document.removeEventListener('keyup', this._handleDocKeyUp);
   }
 }
 

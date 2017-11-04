@@ -32,20 +32,29 @@ var CONFIG = {
         ],
         drops: [
           {trigger: 300, pos: 400, freq: 1}
+        ],
+        messages: [
+          {restarts: 0, text: 'Press SPACE to slow down'}
         ]
       }, {
         player: {
           speed: 0.1
         },
         walls: [
-          {pos: 'top', x: 160, h: 300, grow: 200, start: Math.PI, freq: 0.7},
-          {pos: 'bottom', x: 160, h: 300, grow: 200, start: Math.PI, freq: 0.7},
-          {pos: 'bottom', x: 800, h: 400, grow: 200, freq: 0.3},
+          {pos: 'bottom', x: 280, h: 400, grow: 200, freq: 0.3},
+          {pos: 'top', x: 400, h: 300, grow: 200, start: Math.PI, freq: 0.7},
+          {pos: 'bottom', x: 400, h: 300, grow: 200, start: PI_1Q, freq: 0.7},
+          {pos: 'bottom', x: 680, h: 400, grow: 200, freq: 0.3},
+          {pos: 'top', x: 800, h: 300, grow: 200, start: Math.PI, freq: 0.7},
+          {pos: 'bottom', x: 800, h: 300, grow: 200, start: PI_1Q, freq: 0.7},
           {pos: 'top', x: 0, h: 400, w: 1000, color: 'rgb(50,50,180)'},
           {pos: 'bottom', x: 0, h: 400, w: 1000, color: 'rgb(30,30,150)'}
         ],
         drops: [
           {trigger: 300, pos: 400, freq: 1}
+        ],
+        messages: [
+          {restarts: 1, text: 'If you break for too long you die'}
         ]
       }, {
         player: {

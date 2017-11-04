@@ -14,7 +14,7 @@ import { Credits } from './states/Credits.js';
 
 const RESET_SEC = 0.1;
 const INTRO_SEC = 1;
-const SPLASH_SEC = 10;
+const SPLASH_SEC = 10000;
 const DEMO_SEC = 1;
 const CREDITS_SEC = 10;
 

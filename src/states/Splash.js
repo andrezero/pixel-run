@@ -13,8 +13,10 @@ class Splash {
     this._auxLayer = canvas.newVirtualLayer('splash-aux');
     this._auxCtx = this._auxLayer.ctx;
 
-    this.n = 0;
+    this._iteration = 0;
 
+    this._fontSize = null;
+    this._center = null;
     this._slowDown = false;
     this._skip = 50;
     this._skipped = 0;
@@ -43,29 +45,33 @@ class Splash {
     }
     this._skipped++;
 
-    this.n += this._slowDown ? 5 : 55;
+    this._iteration += this._slowDown ? 5 : 55;
 
-    let x = Math.cos(this.n * (this._slowDown ? 5 : 50)) * 10 + this.center.x;
-    let y = Math.sin(this.n * (this._slowDown ? 5 : 50)) * 10 + this.center.y;
-    const alpha = this._slowDown ? 0.6 : 0.9;
-    ctx.shadowBlur = this._slowDown ? 10 : 2;
+    const iteration = this._iteration;
+    const center = this._center;
+    const slowDown = this._slowDown;
+
+    let x = Math.cos(iteration * (slowDown ? 5 : 50)) * 10 + center.x;
+    let y = Math.sin(iteration * (slowDown ? 5 : 50)) * 10 + center.y;
+    const alpha = slowDown ? 0.6 : 0.9;
+    ctx.shadowBlur = slowDown ? 10 : 2;
     ctx.shadowColor = 'hsl(40,50%,50%)';
-    ctx.fillStyle = 'hsla(' + this.n * 3 % 100 + ',99%,50%,' + alpha + ')';
+    ctx.fillStyle = 'hsla(' + iteration * 3 % 100 + ',99%,50%,' + alpha + ')';
     ctx.fillText('RUN!', Math.round(x), Math.round(y));
 
-    x = Math.cos(this.n * (this._slowDown ? 1 : 5)) * (this._slowDown ? 0.7 : 5) + this.center.x;
-    y = this.center.y;
+    x = Math.cos(iteration * (slowDown ? 1 : 5)) * (slowDown ? 0.7 : 5) + center.x;
+    y = center.y;
     ctx.fillStyle = 'black';
     ctx.fillText('RUN!', Math.round(x), Math.round(y));
   }
 
   resize () {
-    this.center = this._canvas.scalePoint(this._canvas.center);
-    this._fontSize = Math.round(this._canvas.max.x / 7);
+    this._center = this._canvas.scalePoint(this._canvas.center);
+    this._fontSize = this._canvas.scaleText(250);
 
     const ctx = this._ctx;
 
-    ctx.font = 'bold ' + this._fontSize + 'px arial';
+    ctx.font = 'bold ' + this._fontSize + 'px pixel';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
