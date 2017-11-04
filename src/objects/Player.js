@@ -4,9 +4,6 @@ import { ObjCollection } from '../../lib/ObjCollection';
 import { sin, easeInCubic } from '../../lib/Maths';
 
 const SIZE = 40;
-const X_SPEED = 10;
-const HEALTH_DEC = 0.01;
-const HEALTH_INTERVAL_MSEC = 30;
 const DYING_MS = 500;
 
 class Player {
@@ -18,6 +15,7 @@ class Player {
     this._ctx = this._layer.ctx;
 
     this._speed = config.speed || 0.1;
+    this._maxBreakingSec = config._maxBreakingSec || 4;
 
     this._objects = new ObjCollection();
 
@@ -33,19 +31,17 @@ class Player {
     this._onDieCallback = null;
     this._onCompleteLevelCallback = null;
 
-    this._paused = null;
+    this._isBreaking = null;
     this._health = 1;
-    this._healthIntervalId = null;
 
-    this._dyingTimeoutId = null;
-    this._dyingTimestamp = null;
     this._isDying = null;
+    this._dyingTimestamp = null;
 
     this._keyIsDown = false;
 
     this._keydown = () => {
       if (!this._keyIsDown) {
-        this.pause();
+        this.break();
         this._keyIsDown = true;
       }
     };
@@ -84,22 +80,15 @@ class Player {
 
   // - state
 
-  pause () {
-    if (!this._paused) {
-      this._paused = true;
-      this._healthIntervalId = window.setInterval(() => {
-        this._health -= HEALTH_DEC;
-        if (this._health <= 0) {
-          this.die();
-        }
-      }, HEALTH_INTERVAL_MSEC);
+  break () {
+    if (!this._isBreaking) {
+      this._isBreaking = true;
     }
   }
 
   resume () {
-    if (this._paused && !this._isDying) {
-      this._paused = false;
-      window.clearInterval(this._healthIntervalId);
+    if (this._isBreaking && !this._isDying) {
+      this._isBreaking = false;
     }
   }
 
@@ -109,19 +98,28 @@ class Player {
     }
     this._unbindKeys();
     this._isDying = true;
-    this._paused = false;
-    window.clearInterval(this._healthIntervalId);
-    this._dyingTimeoutId = window.setTimeout(() => {
-      this._onDieCallback();
-    }, DYING_MS);
+    this._isBreaking = false;
   }
 
   // -- AppObject API
 
   update (delta, timestamp) {
-    this.pos.x = this.pos.x + this._speed * delta * (this._paused ? 0.2 : 1); // * (this.heath / INITIAL_HEALTH);
-    if (this.pos.x > 1000) {
+    if (this._isDying) {
+      this._dyingTimestamp = this._dyingTimestamp || timestamp;
+      if (timestamp - this._dyingTimestamp > DYING_MS) {
+        this._isDying = false;
+        this._onDieCallback();
+      }
+    } else if (this.pos.x > 1000) {
       this._onCompleteLevelCallback();
+    } else if (this._isBreaking) {
+      this.pos.x = this.pos.x + this._speed * delta * 0.2;
+      this._health -= 1 / (this._maxBreakingSec * 1000) * delta;
+    } else {
+      this.pos.x = this.pos.x + this._speed * delta;
+    }
+    if (this._health <= 0) {
+      this.die();
     }
     this._objects.update(delta, timestamp);
   }
@@ -137,17 +135,7 @@ class Player {
     let rgba;
     let shadowBlur;
     let shadowColor;
-    if (!this._isDying) {
-      let pulse = sin(timestamp, 10 * this._speed * (this.paused ? 2 * (1 - this._health) : this._health));
-      red = Math.round(255 * (1 - this._health));
-      green = Math.round(255 * this._health);
-      alpha = 0.75 + 0.25 * this._health;
-      shadowBlur = Math.round((1 - this._health) * 10 + 20 * pulse);
-      shadowColor = 'rgb(' + red + ',' + green + ',10)';
-      rgba = 'rgba(' + red + ',' + green + ',0,' + alpha + ')';
-    } else {
-      this._dyingTimestamp = this._dyingTimestamp || timestamp;
-
+    if (this._isDying) {
       let scaleUp = easeInCubic((timestamp - this._dyingTimestamp) / DYING_MS);
       let scaleDown = 1 - scaleUp;
       red = Math.round(50 * scaleUp + 200);
@@ -164,6 +152,14 @@ class Player {
 
       shadowBlur = 10;
       shadowColor = 'hsl(40,50%,50%)';
+    } else {
+      let pulse = sin(timestamp, 10 * this._speed * (this.breakd ? 2 * (1 - this._health) : this._health));
+      red = Math.round(255 * (1 - this._health));
+      green = Math.round(255 * this._health);
+      alpha = 0.75 + 0.25 * this._health;
+      shadowBlur = Math.round((1 - this._health) * 10 + 20 * pulse);
+      shadowColor = 'rgb(' + red + ',' + green + ',10)';
+      rgba = 'rgba(' + red + ',' + green + ',0,' + alpha + ')';
     }
 
     rgba = 'rgba(' + red + ',' + green + ',' + blue + ',' + alpha + ')';
@@ -185,9 +181,6 @@ class Player {
 
     document.removeEventListener('keydown', this._keydown);
     document.removeEventListener('keyup', this._keyup);
-
-    window.clearInterval(this._healthIntervalId);
-    window.clearTimeout(this._dyingTimeoutId);
 
     this._objects.destroyAll();
   }
