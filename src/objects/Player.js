@@ -121,7 +121,6 @@ class Player {
     if (this._health <= 0) {
       this.die();
     }
-    this._objects.update(delta, timestamp);
   }
 
   render (delta, timestamp) {
@@ -170,7 +169,6 @@ class Player {
     ctx.shadowColor = shadowColor;
     ctx.fillStyle = rgba;
     ctx.fillRect(...this._canvas.scaleArray(rect));
-    this._objects.render(delta, timestamp);
   }
 
   destroy () {
