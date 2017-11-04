@@ -21,7 +21,7 @@ class Level {
 
     this._objects = new ObjCollection();
 
-    this._objects.add(new LevelNumber(canvas, config, number + 2, !this._restarts));
+    this._objects.add(new LevelNumber(canvas, config, number + 1, !this._restarts));
 
     for (let ix = 0; ix < config.walls.length; ix++) {
       let wall = new Wall(canvas, config.walls[ix]);

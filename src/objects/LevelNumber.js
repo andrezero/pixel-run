@@ -92,7 +92,7 @@ class LevelNumber {
     ctx.shadowBlur = this._zoomedOut ? 2 : 5;
     ctx.shadowColor = 'hsl(' + hue + ',50%,50%)';
     ctx.strokeStyle = 'hsl(' + hue + ',99%,50%)';
-    ctx.strokeText(2, x, y);
+    ctx.strokeText(this._number, x, y);
   }
 
   resize () {
