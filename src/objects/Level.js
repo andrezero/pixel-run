@@ -63,9 +63,6 @@ class Level {
   }
 
   destroy () {
-    this._canvas = null;
-    this._ctx = null;
-
     this._objects.destroyAll();
   }
 }

@@ -5,6 +5,7 @@ import { sin, easeInCubic } from '../../lib/Maths';
 
 const SIZE = 40;
 const DYING_MS = 500;
+const MAX_TONE = 3;
 
 class Player {
   constructor (canvas, config) {
@@ -25,31 +26,36 @@ class Player {
     };
     this.pos = {
       x: SIZE / -2,
-      y: canvas.center.y - SIZE / 2
+      y: canvas.center.y - SIZE / 2,
+      wave: 0
     };
 
     this._onDieCallback = null;
     this._onCompleteLevelCallback = null;
 
+    this._tone = null;
+    this._toneTimestamp = null;
     this._isBreaking = null;
     this._health = 1;
 
     this._isDying = null;
     this._dyingTimestamp = null;
 
-    this._keyIsDown = false;
-
-    this._keydown = () => {
-      if (!this._keyIsDown) {
+    this._keydown = (event) => {
+      if (event.which === 32) {
         this.break();
-        this._keyIsDown = true;
+      }
+      if (event.which === 38) {
+        this.up();
+      }
+      if (event.which === 40) {
+        this.down();
       }
     };
 
-    this._keyup = () => {
-      if (this._keyIsDown) {
+    this._keyup = (event) => {
+      if (event.which === 32) {
         this.resume();
-        this._keyIsDown = false;
       }
     };
 
@@ -81,7 +87,7 @@ class Player {
   // - state
 
   break () {
-    if (!this._isBreaking) {
+    if (!this._isBreaking && !this._isDying) {
       this._isBreaking = true;
     }
   }
@@ -89,6 +95,21 @@ class Player {
   resume () {
     if (this._isBreaking && !this._isDying) {
       this._isBreaking = false;
+    }
+  }
+
+  up () {
+    if (this._tone < MAX_TONE && !this._isDying) {
+      this._tone++;
+    }
+  }
+
+  down () {
+    if (this._tone >= 0 && !this._isDying) {
+      this._tone--;
+      if (this._tone === 0) {
+        this._toneTimestamp = null;
+      }
     }
   }
 
@@ -112,11 +133,19 @@ class Player {
       }
     } else if (this.pos.x > 1000) {
       this._onCompleteLevelCallback();
-    } else if (this._isBreaking) {
-      this.pos.x = this.pos.x + this._speed * delta * 0.2;
-      this._health -= 1 / (this._maxBreakingSec * 1000) * delta;
     } else {
-      this.pos.x = this.pos.x + this._speed * delta;
+      if (this._tone) {
+        this._toneTimestamp = this._toneTimestamp || timestamp;
+        this.pos.wave = sin((timestamp - this._toneTimestamp) / 2) * this._tone * 100 - this._tone * 50;
+      } else {
+        this.pos.wave = 0;
+      }
+      if (this._isBreaking) {
+        this.pos.x = this.pos.x + this._speed * delta * 0.2;
+        this._health -= 1 / (this._maxBreakingSec * 1000) * delta;
+      } else {
+        this.pos.x = this.pos.x + this._speed * delta;
+      }
     }
     if (this._health <= 0) {
       this.die();
@@ -125,7 +154,7 @@ class Player {
 
   render (delta, timestamp) {
     const ctx = this._ctx;
-    const rect = [this.pos.x, this.pos.y, this.size.w, this.size.h];
+    const rect = [this.pos.x, this.pos.y + this.pos.wave, this.size.w, this.size.h];
 
     let red;
     let green;
@@ -179,8 +208,6 @@ class Player {
 
     document.removeEventListener('keydown', this._keydown);
     document.removeEventListener('keyup', this._keyup);
-
-    this._objects.destroyAll();
   }
 }
 

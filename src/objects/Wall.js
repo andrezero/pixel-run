@@ -48,7 +48,7 @@ class Wall {
     if (this._grow) {
       const time = this._timestamp - timestamp;
 
-      this.size.h = Math.round(sin(time, this._freq, this._minSize, this._maxSize));
+      this.size.h = Math.round(sin(time, this._freq, this._minSize, this._maxSize, this._start));
       if (this._config.pos === 'bottom') {
         this.pos.y = this._canvas.max.y - this.size.h;
       }
@@ -59,14 +59,6 @@ class Wall {
     const rect = this._canvas.scaleArray([this.pos.x, this.pos.y, this.size.w, this.size.h]);
     this._ctx.fillStyle = this._color;
     this._ctx.fillRect(...rect);
-  }
-
-  destroy () {
-    this._canvas = null;
-    this._ctx = null;
-    this._onDieCallback = null;
-
-    this._objects.destroyAll();
   }
 }
 

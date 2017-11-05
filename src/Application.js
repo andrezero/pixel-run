@@ -111,7 +111,7 @@ class Application {
   splash () {
     let splash;
     let autoTransition;
-    let click;
+    let keydown;
 
     const canEnterState = (oldState) => {
       return true;
@@ -125,8 +125,8 @@ class Application {
       splash = new Splash(this._canvas, this._config.state.splash, this._debug);
       this._objects.add(splash);
 
-      click = () => this.play();
-      document.addEventListener('click', click);
+      keydown = () => this.play();
+      document.addEventListener('keydown', keydown);
 
       autoTransition = window.setTimeout(() => {
         this.demo();
@@ -140,7 +140,7 @@ class Application {
       }
       this._objects.destroyOne(splash);
       window.clearTimeout(autoTransition);
-      document.removeEventListener('click', click);
+      document.removeEventListener('keydown', keydown);
     };
 
     this._state.to('splash', canEnterState, enterState, leaveState);

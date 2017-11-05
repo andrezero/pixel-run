@@ -49,11 +49,7 @@ class Drop {
   }
 
   destroy () {
-    this._canvas = null;
-    this._ctx = null;
     this._onDieCallback = null;
-
-    this._objects.destroyAll();
   }
 }
 

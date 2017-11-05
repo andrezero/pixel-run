@@ -20,7 +20,7 @@ class Game {
 
     this._state = null;
     this._restarts = 0;
-    this._levelNum = 0;
+    this._levelNum = config.startLevel || 0;
 
     // timeouts/intervals/animationFrame
     this._intervalId = null;
@@ -62,24 +62,11 @@ class Game {
     });
   }
 
-  // - dom events
-
-  _handleDocKeyDown () {
-    this._player.pause();
-  }
-
-  _handleDocKeyUp () {
-    this._player.resume();
-  }
-
   // -- api
 
   gameOver () {
     this._player = null;
     window.clearInterval(this._enemiesIntervalId);
-
-    document.removeEventListener('keydown', this._handleDocKeyDown);
-    document.removeEventListener('keyup', this._handleDocKeyUp);
 
     window.setTimeout(() => {
       this.init();
@@ -87,11 +74,6 @@ class Game {
   }
 
   // -- AppObject API
-
-  destroy () {
-    document.removeEventListener('keydown', this._handleDocKeyDown);
-    document.removeEventListener('keyup', this._handleDocKeyUp);
-  }
 }
 
 export {

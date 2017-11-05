@@ -1,6 +1,7 @@
 'use strict';
 
 import { ObjCollection } from '../../lib/ObjCollection';
+import { Message } from '../objects/Message';
 
 class Splash {
   constructor (canvas, config) {
@@ -10,8 +11,7 @@ class Splash {
     this._layer = canvas.newLayer('splash');
     this._ctx = this._layer.ctx;
 
-    this._auxLayer = canvas.newVirtualLayer('splash-aux');
-    this._auxCtx = this._auxLayer.ctx;
+    this._text = 'pixel-run';
 
     this._iteration = 0;
 
@@ -20,6 +20,8 @@ class Splash {
     this._slowDown = false;
     this._skip = 50;
     this._skipped = 0;
+
+    this._objects = new ObjCollection();
 
     this.resize();
 
@@ -30,6 +32,8 @@ class Splash {
     this._slowDown = false;
     window.clearTimeout(this._timeoutId);
     this._timeoutId = window.setTimeout(() => {
+      const message = new Message(this._canvas, { text: 'press any key to start' });
+      this._objects.add(message);
       this._slowDown = true;
     }, 500);
   }
@@ -57,17 +61,17 @@ class Splash {
     ctx.shadowBlur = slowDown ? 10 : 2;
     ctx.shadowColor = 'hsl(40,50%,50%)';
     ctx.fillStyle = 'hsla(' + iteration * 3 % 100 + ',99%,50%,' + alpha + ')';
-    ctx.fillText('RUN!', Math.round(x), Math.round(y));
+    ctx.fillText(this._text, Math.round(x), Math.round(y));
 
     x = Math.cos(iteration * (slowDown ? 1 : 5)) * (slowDown ? 0.7 : 5) + center.x;
     y = center.y;
     ctx.fillStyle = 'black';
-    ctx.fillText('RUN!', Math.round(x), Math.round(y));
+    ctx.fillText(this._text, Math.round(x), Math.round(y));
   }
 
   resize () {
     this._center = this._canvas.scalePoint(this._canvas.center);
-    this._fontSize = this._canvas.scaleText(250);
+    this._fontSize = this._canvas.scaleText(150);
 
     const ctx = this._ctx;
 
@@ -80,7 +84,6 @@ class Splash {
 
   destroy () {
     this._canvas.destroyLayer(this._layer);
-    this._canvas.destroyLayer(this._auxLayer);
 
     window.clearTimeout(this._timeoutId);
   }

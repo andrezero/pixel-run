@@ -3,7 +3,7 @@
 import { ObjCollection } from '../../lib/ObjCollection';
 import { ramp, sin, easeOutCubic, easeInCubic } from '../../lib/Maths';
 
-const PADDING = 10;
+const PADDING = 4;
 const FONT_SIZE = 40;
 const MIN_FONT_PIXELS = 20;
 class LevelNumber {
@@ -14,9 +14,6 @@ class LevelNumber {
 
     this._layer = canvas.newLayer('level-num');
     this._ctx = this._layer.ctx;
-
-    this._auxLayer = canvas.newVirtualLayer('splash-aux');
-    this._auxCtx = this._auxLayer.ctx;
 
     this._maxFontSize = null;
     this._fontSize = null;
@@ -44,16 +41,16 @@ class LevelNumber {
     const y = this._canvas.scaleValue(this._canvas.max.y * 0.02);
 
     const dim = this._dim;
-    const width = PADDING * 2 + dim.width;
-    const height = PADDING * 2 + dim.actualBoundingBoxAscent + dim.actualBoundingBoxDescent;
-    const rect = [this._canvas.width - width - PADDING * 1.5, PADDING * 1.2, width, height];
+    const width = dim.width - 2;
+    const height = dim.actualBoundingBoxAscent + dim.actualBoundingBoxDescent - 3;
+    const rect = [x - width - PADDING, y - PADDING, width + PADDING * 2, height + PADDING * 2];
 
     ctx.clearRect(...rect);
 
     ctx.fillStyle = 'rgba(0,0,0,0.8)';
     ctx.fillRect(...rect);
     ctx.fillStyle = 'hsl(' + hue + ',95%,60%)';
-    ctx.fillText(this._number, x - PADDING, y + PADDING);
+    ctx.fillText(this._number, x, y);
   }
 
   resize () {
@@ -71,7 +68,6 @@ class LevelNumber {
 
   destroy () {
     this._canvas.destroyLayer(this._layer);
-    this._canvas.destroyLayer(this._auxLayer);
 
     window.clearTimeout(this._timeoutId);
   }
