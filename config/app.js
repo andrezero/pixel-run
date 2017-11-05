@@ -1,6 +1,6 @@
 'use strict';
 
-import { sin, PI_1Q, PI_2Q, PI_3Q } from '../lib/Maths';
+import { sin, PI_1H, PI_2H, PI_3H } from '../lib/Maths';
 
 var CONFIG = {
   debug: true,
@@ -19,15 +19,16 @@ var CONFIG = {
     splash: {},
     demo: {},
     play: {
-      startLevel: 0,
+      startLevel: 3,
       levels: [{
         player: {
           speed: 0.1
         },
         walls: [
-          {pos: 'top', x: 160, h: 300, grow: 200, start: Math.PI, freq: 0.7},
-          {pos: 'bottom', x: 160, h: 300, grow: 200, start: Math.PI, freq: 0.7},
-          {pos: 'bottom', x: 800, h: 400, grow: 200, freq: 0.3},
+          {pos: 'top', x: 200, h: 300, grow: 200, phase: PI_2H, freq: 0.7},
+          {pos: 'bottom', x: 200, h: 300, grow: 200, phase: PI_2H, freq: 0.7},
+          {pos: 'top', x: 500, h: 400, grow: 200, phase: PI_1H, freq: 0.5},
+          {pos: 'bottom', x: 800, h: 400, grow: 200, freq: 0.4},
           {pos: 'top', x: 0, h: 400, w: 1000, color: 'rgb(50,50,180)'},
           {pos: 'bottom', x: 0, h: 400, w: 1000, color: 'rgb(30,30,150)'}
         ],
@@ -42,12 +43,12 @@ var CONFIG = {
           speed: 0.1
         },
         walls: [
-          {pos: 'bottom', x: 280, h: 400, grow: 200, freq: 0.3},
-          {pos: 'top', x: 400, h: 300, grow: 200, start: Math.PI, freq: 0.7},
-          {pos: 'bottom', x: 400, h: 300, grow: 200, start: PI_1Q, freq: 0.7},
-          {pos: 'bottom', x: 680, h: 400, grow: 200, freq: 0.3},
-          {pos: 'top', x: 800, h: 300, grow: 200, start: Math.PI, freq: 0.7},
-          {pos: 'bottom', x: 800, h: 300, grow: 200, start: PI_1Q, freq: 0.7},
+          {pos: 'bottom', x: 240, h: 200, grow: 400, phase: 0, freq: 0.4},
+          {pos: 'top', x: 420, h: 300, grow: 300, phase: PI_2H, freq: 0.6},
+          {pos: 'bottom', x: 420, h: 300, grow: 300, phase: PI_2H, freq: 0.6},
+          {pos: 'bottom', x: 580, h: 400, grow: 400, phase: PI_1H, freq: 0.1},
+          {pos: 'top', x: 800, h: 300, grow: 400, phase: PI_1H, freq: 0.2},
+          {pos: 'bottom', x: 800, h: 300, grow: 400, phase: PI_1H, freq: 0.2},
           {pos: 'top', x: 0, h: 400, w: 1000, color: 'rgb(50,50,180)'},
           {pos: 'bottom', x: 0, h: 400, w: 1000, color: 'rgb(30,30,150)'}
         ],
@@ -77,13 +78,13 @@ var CONFIG = {
           speed: 0.12
         },
         walls: [
-          {pos: 'top', x: 150, h: 420, grow: 200, start: 0, freq: 1},
-          {pos: 'top', x: 250, h: 400, grow: 200, start: 0, freq: 1},
-          {pos: 'top', x: 350, h: 320, grow: 200, start: 0, freq: 0.8},
-          {pos: 'top', x: 450, h: 380, grow: 200, start: 0, freq: 0.8},
-          {pos: 'top', x: 600, h: 400, grow: 200, start: 0, freq: 0.5},
-          {pos: 'bottom', x: 700, h: 0, grow: 600, start: PI_3Q, freq: 0.5},
-          {pos: 'bottom', x: 800, h: 300, w: 140, grow: 300, start: PI_3Q, freq: 0.4},
+          {pos: 'top', x: 150, h: 420, grow: 200, phase: PI_2H, freq: 0.5},
+          {pos: 'top', x: 250, h: 400, grow: 200, phase: PI_3H, freq: 0.50},
+          {pos: 'top', x: 350, h: 400, grow: 200, phase: PI_1H, freq: 0.4},
+          {pos: 'top', x: 450, h: 380, grow: 200, phase: PI_3H, freq: 0.8},
+          {pos: 'bottom', x: 550, h: 400, grow: 200, phase: PI_3H, freq: 0.5},
+          {pos: 'bottom', x: 700, h: 0, grow: 600, phase: PI_3H, freq: 0.5},
+          {pos: 'bottom', x: 800, h: 300, w: 140, grow: 300, phase: PI_3H, freq: 0.3},
           {pos: 'top', x: 0, h: 400, w: 1000, color: 'rgb(50,50,180)'},
           {pos: 'bottom', x: 0, h: 400, w: 1000, color: 'rgb(30,30,150)'}
         ],

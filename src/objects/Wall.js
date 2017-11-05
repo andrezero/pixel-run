@@ -20,7 +20,7 @@ class Wall {
     this.pos = {x: config.x};
 
     this._minSize = this.size.h;
-    this._start = config.start || 0;
+    this._phase = config.phase || 0;
     this._grow = config.grow;
     this._freq = config.freq;
     this._maxSize = this._minSize + config.grow;
@@ -48,7 +48,7 @@ class Wall {
     if (this._grow) {
       const time = this._timestamp - timestamp;
 
-      this.size.h = Math.round(sin(time, this._freq, this._minSize, this._maxSize, this._start));
+      this.size.h = Math.round(sin(time, this._freq, this._minSize, this._maxSize, this._phase));
       if (this._config.pos === 'bottom') {
         this.pos.y = this._canvas.max.y - this.size.h;
       }

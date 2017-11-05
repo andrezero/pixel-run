@@ -5,7 +5,7 @@ import { sin, easeInCubic } from '../../lib/Maths';
 
 const SIZE = 40;
 const DYING_MS = 500;
-const MAX_TONE = 3;
+const MAX_ENERGY = 3;
 
 class Player {
   constructor (canvas, config) {
@@ -26,36 +26,45 @@ class Player {
     };
     this.pos = {
       x: SIZE / -2,
-      y: canvas.center.y - SIZE / 2,
-      wave: 0
+      y: canvas.center.y - SIZE / 2
     };
 
     this._onDieCallback = null;
     this._onCompleteLevelCallback = null;
 
-    this._tone = null;
-    this._toneTimestamp = null;
-    this._isBreaking = null;
+    this._isHolding = null;
     this._health = 1;
+
+    this._energy = 0;
+    this._direction = 0;
+    this._swingTimestamp = null;
+    this._pressUp = false;
+    this._pressDown = false;
 
     this._isDying = null;
     this._dyingTimestamp = null;
 
     this._keydown = (event) => {
       if (event.which === 32) {
-        this.break();
+        this._hold();
       }
       if (event.which === 38) {
-        this.up();
+        this._up(true);
       }
       if (event.which === 40) {
-        this.down();
+        this._down(true);
       }
     };
 
     this._keyup = (event) => {
       if (event.which === 32) {
-        this.resume();
+        this._release();
+      }
+      if (event.which === 38) {
+        this._up();
+      }
+      if (event.which === 40) {
+        this._down();
       }
     };
 
@@ -72,6 +81,30 @@ class Player {
     document.addEventListener('keyup', this._keyup);
   }
 
+  _hold () {
+    if (!this._isHolding && !this._isDying) {
+      this._isHolding = true;
+    }
+  }
+
+  _release () {
+    if (this._isHolding && !this._isDying) {
+      this._isHolding = false;
+    }
+  }
+
+  _up (on) {
+    if (!this._isDying) {
+      this._pressUp = on;
+    }
+  }
+
+  _down (on) {
+    if (!this._isDying) {
+      this._pressDown = on;
+    }
+  }
+
   // -- public
 
   // - setup
@@ -86,40 +119,13 @@ class Player {
 
   // - state
 
-  break () {
-    if (!this._isBreaking && !this._isDying) {
-      this._isBreaking = true;
-    }
-  }
-
-  resume () {
-    if (this._isBreaking && !this._isDying) {
-      this._isBreaking = false;
-    }
-  }
-
-  up () {
-    if (this._tone < MAX_TONE && !this._isDying) {
-      this._tone++;
-    }
-  }
-
-  down () {
-    if (this._tone >= 0 && !this._isDying) {
-      this._tone--;
-      if (this._tone === 0) {
-        this._toneTimestamp = null;
-      }
-    }
-  }
-
   die () {
     if (this._isDying) {
       return;
     }
     this._unbindKeys();
     this._isDying = true;
-    this._isBreaking = false;
+    this._isHolding = false;
   }
 
   // -- AppObject API
@@ -134,13 +140,33 @@ class Player {
     } else if (this.pos.x > 1000) {
       this._onCompleteLevelCallback();
     } else {
-      if (this._tone) {
-        this._toneTimestamp = this._toneTimestamp || timestamp;
-        this.pos.wave = sin((timestamp - this._toneTimestamp) / 2) * this._tone * 100 - this._tone * 50;
-      } else {
-        this.pos.wave = 0;
+      if (this._pressUp && !this._pressDown) {
+        if (!this._energy) {
+          this._energy = delta;
+        } else if (this._direction < 0) {
+          this._energy += delta;
+        } else {
+          this._energy -= delta;
+        }
+      } else if (this._pressDown && !this._pressUp) {
+        if (!this._energy) {
+          this._energy = -delta;
+        } else if (this._direction < 0) {
+          this._energy -= delta;
+        } else {
+          this._energy += delta;
+        }
       }
-      if (this._isBreaking) {
+
+      console.log(this._energy);
+
+      // if (this._tone) {
+      //   this._toneTimestamp = this._toneTimestamp || timestamp;
+      //   this.pos.wave = sin((timestamp - this._toneTimestamp) / 2) * this._tone * 100 - this._tone * 50;
+      // } else {
+      //   this.pos.wave = 0;
+      // }
+      if (this._isHolding) {
         this.pos.x = this.pos.x + this._speed * delta * 0.2;
         this._health -= 1 / (this._maxBreakingSec * 1000) * delta;
       } else {
@@ -154,7 +180,7 @@ class Player {
 
   render (delta, timestamp) {
     const ctx = this._ctx;
-    const rect = [this.pos.x, this.pos.y + this.pos.wave, this.size.w, this.size.h];
+    const rect = [this.pos.x, this.pos.y, this.size.w, this.size.h];
 
     let red;
     let green;
