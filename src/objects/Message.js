@@ -5,7 +5,7 @@ import { sin, PI_3Q } from '../../lib/Maths';
 
 const PADDING = 10;
 const FONT_SIZE = 20;
-const MIN_FONT_PIXELS = 16;
+const MIN_FONT_PIXELS = 12;
 
 class Message {
   constructor (canvas, config) {
