@@ -1,24 +1,44 @@
 'use strict';
 
 import { ObjCollection } from '../../lib/ObjCollection';
-import { sin, easeInCubic } from '../../lib/Maths';
+import { sin, cos, ramp, easeInCubic, PI_1H, PI_2H, PI_3H } from '../../lib/Maths';
 
 const SIZE = 40;
+const DEFAULT_SPEED = 1;
+const SPEED_FACTOR = 0.1;
+const MAX_HOLD_SEC = 4;
+const HOLD_START_FACTOR = 0.9;
+const HOLD_RAMP_MS = 1000;
+const HOLD_MIN_FACTOR = 0.1;
+const ACCELERATE_RAMP_MS = 1000;
+const PUSH_ENERGY = 10;
+const ENERGY_FACTOR = 1.5;
+const MAX_ENERGY = 150;
+const WAVE_LENGTH = 2;
+const PUSH_AVAILABLE_WAVE_THRESHOLD = 0.3;
+const PUSH_MS = 150;
 const DYING_MS = 500;
-const MAX_ENERGY = 3;
 
 class Player {
-  constructor (canvas, config) {
+  constructor (canvas, speed, config) {
     this._canvas = canvas;
     this._config = config;
 
     this._layer = canvas.newLayer('player');
     this._ctx = this._layer.ctx;
 
-    this._speed = config.speed || 0.1;
-    this._maxBreakingSec = config._maxBreakingSec || 4;
-
     this._objects = new ObjCollection();
+
+    this._speed = speed || DEFAULT_SPEED;
+    this._maxHoldSec = config.maxHoldSec || MAX_HOLD_SEC;
+    this._holdStartFactor = config.holdStartFactor || HOLD_START_FACTOR;
+    this._holdRampMs = config.holdRampMs || HOLD_RAMP_MS;
+    this._holdMinFactor = config.holdMinFactor || HOLD_MIN_FACTOR;
+    this._accelerateRampMs = config.accelerateRampMs || ACCELERATE_RAMP_MS;
+    this._pushEnergy = config.pushEnergy || PUSH_ENERGY;
+    this._energyFactor = config.energyFactor || ENERGY_FACTOR;
+    this._maxEnergy = config.maxEnergy || MAX_ENERGY;
+    this._waveLength = config.waveLength || WAVE_LENGTH;
 
     this.size = {
       w: SIZE,
@@ -32,14 +52,25 @@ class Player {
     this._onDieCallback = null;
     this._onCompleteLevelCallback = null;
 
-    this._isHolding = null;
     this._health = 1;
 
+    this._isHolding = null;
+    this._holdingTimestamp = null;
+    this._holdFactor = null;
+    this._acceleratingTimestamp = null;
+    this._acceleratingFromFactor = null;
+
     this._energy = 0;
-    this._direction = 0;
+    this._wave = 0;
+    this._wavePrevious = 0;
     this._swingTimestamp = null;
     this._pressUp = false;
+    this._pushUp = false;
+    this._pushValid = null;
+    this._pushTimestsamp = null;
     this._pressDown = false;
+    this._pushDown = false;
+    this._pushLock = false;
 
     this._isDying = null;
     this._dyingTimestamp = null;
@@ -48,11 +79,13 @@ class Player {
       if (event.which === 32) {
         this._hold();
       }
-      if (event.which === 38) {
-        this._up(true);
+      if (event.which === 38 && !this._pressUp) {
+        this._pressUp = true;
+        this._up();
       }
-      if (event.which === 40) {
-        this._down(true);
+      if (event.which === 40 && !this._pressDown) {
+        this._pressDown = true;
+        this._down();
       }
     };
 
@@ -61,10 +94,10 @@ class Player {
         this._release();
       }
       if (event.which === 38) {
-        this._up();
+        this._pressUp = false;
       }
       if (event.which === 40) {
-        this._down();
+        this._pressDown = false;
       }
     };
 
@@ -84,24 +117,32 @@ class Player {
   _hold () {
     if (!this._isHolding && !this._isDying) {
       this._isHolding = true;
+      this._holdingTimestamp = null;
     }
   }
 
   _release () {
     if (this._isHolding && !this._isDying) {
       this._isHolding = false;
+      this._isAccelerating = true;
+      this._acceleratingTimestamp = null;
+      this._acceleratingFromFactor = this._holdFactor;
     }
   }
 
-  _up (on) {
-    if (!this._isDying) {
-      this._pressUp = on;
+  _up () {
+    if (!this._isDying && !this._pushLock) {
+      this._pushUp = true;
+      this._pushValid = false;
+      this._pushLock = true;
     }
   }
 
-  _down (on) {
-    if (!this._isDying) {
-      this._pressDown = on;
+  _down () {
+    if (!this._isDying && !this._pushLock) {
+      this._pushDown = true;
+      this._pushValid = false;
+      this._pushLock = true;
     }
   }
 
@@ -126,6 +167,7 @@ class Player {
     this._unbindKeys();
     this._isDying = true;
     this._isHolding = false;
+    this._isAccelerating = false;
   }
 
   // -- AppObject API
@@ -140,38 +182,73 @@ class Player {
     } else if (this.pos.x > 1000) {
       this._onCompleteLevelCallback();
     } else {
-      if (this._pressUp && !this._pressDown) {
+      if (this._pushUp) {
+        this._pushTimestsamp = timestamp;
+        this._pushUp = false;
+        console.log('push up');
         if (!this._energy) {
-          this._energy = delta;
-        } else if (this._direction < 0) {
-          this._energy += delta;
+          this._energy = this._pushEnergy;
+          this._phase = PI_3H;
+          this._pushValid = true;
+          console.log('--valid');
+        } else if (this._wave < -1 * PUSH_AVAILABLE_WAVE_THRESHOLD) {
+          this._pushValid = true;
+          console.log('--valid', this._wave);
+          this._energy = Math.min(this._maxEnergy, this._energy * this._energyFactor);
         } else {
-          this._energy -= delta;
+          console.log('-in-valid', this._wave);
         }
-      } else if (this._pressDown && !this._pressUp) {
+      } else if (this._pushDown) {
+        this._pushTimestsamp = timestamp;
+        this._pushDown = false;
+        console.log('push down');
         if (!this._energy) {
-          this._energy = -delta;
-        } else if (this._direction < 0) {
-          this._energy -= delta;
+          this._energy = this._pushEnergy;
+          this._phase = PI_1H;
+          this._pushValid = true;
+          console.log('--valid');
+        } else if (this._wave > PUSH_AVAILABLE_WAVE_THRESHOLD) {
+          this._pushValid = true;
+          console.log('--valid', this._wave);
+          this._energy = Math.min(this._maxEnergy, this._energy * this._energyFactor);
         } else {
-          this._energy += delta;
+          console.log('-in-valid', this._wave);
         }
       }
 
-      console.log(this._energy);
+      if (this._energy < 0) {
+        this._energy = 0;
+        this._swingTimestamp = null;
+        this._wavePrevious = 0;
+        this._wave = 0;
+        this._pushLock = false;
+      } else if (this._energy) {
+        this._swingTimestamp = this._swingTimestamp || timestamp - 1;
+        const swingDelta = (timestamp - this._swingTimestamp) / this._waveLength;
+        const wave = sin(swingDelta, -1, 1, this._phase);
+        this._wave = wave;
+        this.pos.y += wave * this._energy / this._waveLength;
+        if (this._wavePrevious && this._wavePrevious * this._wave < 0) {
+          this._pushLock = false;
+        }
+        this._wavePrevious = this._wave;
+      }
 
-      // if (this._tone) {
-      //   this._toneTimestamp = this._toneTimestamp || timestamp;
-      //   this.pos.wave = sin((timestamp - this._toneTimestamp) / 2) * this._tone * 100 - this._tone * 50;
-      // } else {
-      //   this.pos.wave = 0;
-      // }
       if (this._isHolding) {
-        this.pos.x = this.pos.x + this._speed * delta * 0.2;
-        this._health -= 1 / (this._maxBreakingSec * 1000) * delta;
+        this._holdingTimestamp = this._holdingTimestamp || timestamp;
+        let time = (timestamp - this._holdingTimestamp) / this._holdRampMs;
+        this._holdFactor = ramp(time, this._holdStartFactor, this._holdMinFactor);
+        this._health -= 1 / (this._maxHoldSec * 1000) * delta;
+        this._energy = Math.max(0, this._energy * (1000 - delta * 4) / 1000);
+      } else if (this._isAccelerating) {
+        this._acceleratingTimestamp = this._acceleratingTimestamp || timestamp;
+        let time = (timestamp - this._acceleratingTimestamp) / this._accelerateRampMs;
+        this._holdFactor = ramp(time, this._acceleratingFromFactor, 1);
       } else {
-        this.pos.x = this.pos.x + this._speed * delta;
+        this._holdFactor = 1;
       }
+
+      this.pos.x = this.pos.x + SPEED_FACTOR * this._speed * delta * this._holdFactor;
     }
     if (this._health <= 0) {
       this.die();
@@ -196,24 +273,38 @@ class Player {
       green = Math.round(150 * scaleDown + 50);
       blue = Math.round(100 * scaleUp);
       alpha = 0.5 + 0.5 * scaleDown;
-      shadowBlur = Math.round(scaleDown * 100);
+      shadowBlur = Math.round(5 + scaleDown * 10);
       shadowColor = 'rgb(' + green + ',' + red + ',100)';
+      ctx.shadowOffsetX = Math.round(5 + 100 * scaleUp);
 
       rect[0] -= Math.round(scaleUp * rect[0]);
       rect[1] += Math.round(this.size.h / 4 + scaleUp * 4);
       rect[2] = Math.round(this.size.w * (2 + scaleUp * 3));
       rect[3] = Math.round(this.size.h * scaleDown / 2);
 
-      shadowBlur = 10;
       shadowColor = 'hsl(40,50%,50%)';
     } else {
-      let pulse = sin(timestamp, 10 * this._speed * (this.breakd ? 2 * (1 - this._health) : this._health));
-      red = Math.round(255 * (1 - this._health));
-      green = Math.round(255 * this._health);
+      const halfHealthFactor = 0.5 + 0.5 * this._health;
+      const doubleUnhealthyFactor = 2 - this._health;
+      const pulse = sin(timestamp * this._speed * (this._isHolding ? doubleUnhealthyFactor : halfHealthFactor));
+      red = Math.round(255 * (1 - this._health) * (this._isHolding ? 0.7 : 1));
+      green = Math.round(255 * this._health * (this._isHolding ? 0.7 : 1));
       alpha = 0.75 + 0.25 * this._health;
-      shadowBlur = Math.round((1 - this._health) * 10 + 20 * pulse);
+      shadowBlur = Math.round(5 + 40 * pulse * halfHealthFactor); // Math.round((1 - this._health) * 10 + 20);
       shadowColor = 'rgb(' + red + ',' + green + ',10)';
-      rgba = 'rgba(' + red + ',' + green + ',0,' + alpha + ')';
+      ctx.shadowOffsetX = Math.round(2 + 3 * pulse);
+    }
+
+    if (timestamp - this._pushTimestsamp < PUSH_MS) {
+      if (this._pushValid) {
+        console.log('white', this._energy);
+        red = Math.max(255, red * 2);
+        green = Math.max(255, green * 2);
+      } else {
+        red = 100;
+        green = 100;
+        alpha = 0.5;
+      }
     }
 
     rgba = 'rgba(' + red + ',' + green + ',' + blue + ',' + alpha + ')';
@@ -224,6 +315,31 @@ class Player {
     ctx.shadowColor = shadowColor;
     ctx.fillStyle = rgba;
     ctx.fillRect(...this._canvas.scaleArray(rect));
+
+    let showTriangle = this._energy && Math.abs(this._wave) > PUSH_AVAILABLE_WAVE_THRESHOLD;
+    showTriangle = showTriangle || timestamp - this._pushTimestsamp < PUSH_MS;
+
+    if (!this._isDying && showTriangle) {
+      const center = {
+        x: rect[0] + rect[2] / 2,
+        y: rect[1] + rect[3] / 2
+      };
+
+      const triangle = [];
+      const direction = this._wavePrevious > 0 ? -1 : 1;
+      triangle.push({ x: center.x - this.size.w / 3, y: center.y + this.size.h / 3 * direction });
+      triangle.push({ x: center.x, y: center.y - this.size.h / 3 * direction });
+      triangle.push({ x: center.x + this.size.w / 3, y: center.y + this.size.h / 3 * direction });
+
+      const path = this._canvas.scalePath(triangle);
+
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.beginPath();
+      ctx.moveTo(path[0].x, path[0].y);
+      ctx.lineTo(path[1].x, path[1].y);
+      ctx.lineTo(path[2].x, path[2].y);
+      ctx.fill();
+    }
   }
 
   destroy () {

@@ -7,26 +7,30 @@ import { LevelNumber } from './LevelNumber';
 import { Message } from './Message';
 import { Wall } from './Wall';
 
+const DEFAULT_SPEED = 1;
+
 class Level {
-  constructor (canvas, config, number, restarts, player) {
+  constructor (canvas, number, restarts, player, speed, config) {
+    this._canvas = canvas;
+
+    this._restarts = restarts;
+    this._player = player;
+
     config.walls = config.walls || [];
     config.drops = config.drops || [];
     config.messages = config.messages || [];
-    this._canvas = canvas;
     this._config = config;
-    this._player = player;
-    this._restarts = restarts;
 
     this._ctx = canvas.ctx;
 
+    this._speed = speed || DEFAULT_SPEED;
     this._timestamp = null;
-
     this._objects = new ObjCollection();
 
     this._objects.add(new LevelNumber(canvas, config, number + 1, !this._restarts));
 
     for (let ix = 0; ix < config.walls.length; ix++) {
-      let wall = new Wall(canvas, config.walls[ix]);
+      let wall = new Wall(canvas, this._speed, config.walls[ix]);
       this._objects.add(wall, null, {collision: true});
     }
 

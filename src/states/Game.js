@@ -6,13 +6,16 @@ import { Level } from '../objects/Level';
 import { Player } from '../objects/Player';
 
 const GAME_OVER_SEC = 1000;
+const DEFAULT_SPEED = 1;
 
 class Game {
-  constructor (canvas, config) {
+  constructor (canvas, speed, config) {
     this._canvas = canvas;
     this._config = config;
 
     this._ctx = canvas.ctx;
+
+    this._speed = speed || DEFAULT_SPEED;
 
     this._objects = new ObjCollection();
 
@@ -45,9 +48,12 @@ class Game {
   }
 
   _startLevel () {
-    this._player = new Player(this._canvas, this._levels[this._levelNum].player);
+    const levelConfig = this._levels[this._levelNum];
+    const speed = levelConfig.speed * this._speed; ;
+    const player = levelConfig.player;
+    this._player = new Player(this._canvas, speed, player);
     this._objects.add(this._player, 1);
-    this._level = new Level(this._canvas, this._levels[this._levelNum], this._levelNum, this._restarts, this._player);
+    this._level = new Level(this._canvas, this._levelNum, this._restarts, this._player, speed, levelConfig);
     this._objects.add(this._level, 0);
     this._player.onDie(() => {
       this.deaths++;

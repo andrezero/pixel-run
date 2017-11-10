@@ -12,6 +12,7 @@ import { Game } from './states/Game.js';
 import { About } from './states/About.js';
 import { Credits } from './states/Credits.js';
 
+const SPEED = 1;
 const RESET_SEC = 0.1;
 const INTRO_SEC = 1;
 const SPLASH_SEC = 10000;
@@ -25,14 +26,31 @@ class Application {
     config.frame = config.frame || {};
     config.canvas = config.canvas || {};
     this._config = config;
+    this._speed = this._config.speed;
 
     const stateTranstions = {
       'reset': null,
       'intro': ['reset'],
-      'splash': ['intro', 'demo', 'instructions', 'scores', 'about', 'credits'],
+      'splash': [
+        'intro',
+        'demo',
+        'instructions',
+        'scores',
+        'about',
+        'credits'
+      ],
       'demo': ['splash'],
       'instructions': ['splash', 'demo', 'play', 'pause', 'game-over'],
-      'play': ['intro', 'splash', 'demo', 'instructions', 'pause', 'game-over', 'scores', 'about'],
+      'play': [
+        'intro',
+        'splash',
+        'demo',
+        'instructions',
+        'pause',
+        'game-over',
+        'scores',
+        'about'
+      ],
       'pause': ['play'],
       'game-over': ['play'],
       'scores': ['splash', 'demo', 'game-over'],
@@ -88,9 +106,7 @@ class Application {
   intro () {
     let autoTransition;
 
-    const canEnterState = (oldState) => {
-      return true;
-    };
+    const canEnterState = oldState => true;
 
     const enterState = () => {
       this._intro = new Intro(this._canvas, this._config.state.intro, this._debug);
@@ -113,9 +129,7 @@ class Application {
     let autoTransition;
     let keydown;
 
-    const canEnterState = (oldState) => {
-      return true;
-    };
+    const canEnterState = oldState => true;
 
     const enterState = () => {
       if (!this._intro) {
@@ -150,9 +164,7 @@ class Application {
     let autoTransition;
     let click;
 
-    const canEnterState = (oldState) => {
-      return true;
-    };
+    const canEnterState = oldState => true;
 
     const enterState = () => {
       click = () => this.play();
@@ -172,9 +184,7 @@ class Application {
   }
 
   instructions () {
-    const canEnterState = (oldState) => {
-      return true;
-    };
+    const canEnterState = oldState => true;
 
     const enterState = () => {};
 
@@ -186,13 +196,12 @@ class Application {
   play () {
     let game;
 
-    const canEnterState = (oldState) => {
-      return true;
-    };
+    const canEnterState = oldState => true;
 
     const enterState = () => {
       if (!this._game) {
-        game = new Game(this._canvas, this._config.state.play, this._debug);
+        const speed = this._speed * this._config.state.play.speed;
+        game = new Game(this._canvas, speed, this._config.state.play, this._debug);
         this._game = game;
         this._objects.add(game);
       } else {
@@ -215,9 +224,7 @@ class Application {
   }
 
   pause () {
-    const canEnterState = (oldState) => {
-      return true;
-    };
+    const canEnterState = oldState => true;
 
     const enterState = () => {};
 
@@ -227,9 +234,7 @@ class Application {
   }
 
   gameOver () {
-    const canEnterState = (oldState) => {
-      return true;
-    };
+    const canEnterState = oldState => true;
 
     const enterState = () => {};
 
@@ -239,9 +244,7 @@ class Application {
   }
 
   scores () {
-    const canEnterState = (oldState) => {
-      return true;
-    };
+    const canEnterState = oldState => true;
 
     const enterState = () => {};
 
@@ -253,9 +256,7 @@ class Application {
   about () {
     let about;
 
-    const canEnterState = (oldState) => {
-      return true;
-    };
+    const canEnterState = oldState => true;
 
     const enterState = () => {
       about = new About(this._canvas, this._config.state.about, this._debug);
@@ -273,9 +274,7 @@ class Application {
     let credits;
     let autoTransition;
 
-    const canEnterState = (oldState) => {
-      return this._lastGame.isCompleted();
-    };
+    const canEnterState = oldState => this._lastGame.isCompleted();
 
     const enterState = () => {
       credits = new Credits(this._canvas, this._config.state.credits, this._debug);
