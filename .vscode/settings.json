@@ -2,7 +2,7 @@
   // When opening a file, `editor.tabSize` and `editor.insertSpaces` will be detected based on the file contents.
   "editor.detectIndentation": true,
   // The number of spaces a tab is equal to. This setting is overriden based on the file contents when `editor.detectIndentation` is on.
-  "editor.tabSize": 2,
+  "editor.tabSize": 4,
   // Inserting and deleting whitespace follows tab stops
   "editor.useTabStops": true,
   // Controls how the editor should render whitespace characters, possibilities are 'none', 'boundary', and 'all'. The 'boundary' option does not render single spaces between words.
@@ -19,8 +19,19 @@
   "javascript.validate.enable": true,
   // Enable/disable default JavaScript formatter.
   "javascript.format.enable": false,
+  // Controls whether eslint is enabled for JavaScript files or not.
+  "eslint.enable": true,
   // Turns auto fix on save on or off.
   "eslint.autoFixOnSave": true,
+  // An array of language ids which should be validated by ESLint
+  "eslint.validate": [
+    "javascript",
+    "json"
+  ],
   // When enabled, insert a final new line at the end of the file when saving it.
-  "files.insertFinalNewline": true
+  "files.insertFinalNewline": true,
+  // Configure glob patterns for excluding files and folders in searches. Inherits all glob patterns from the files.exclude setting.
+  "search.exclude": {
+    "**/dist": true
+  }
 }

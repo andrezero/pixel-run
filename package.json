@@ -1,10 +1,12 @@
 {
-  "name": "canvas",
+  "name": "pixel-run",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "webpack-dev-server",
+    "lint": "eslint src/ lib/",
+    "lint-fix": "eslint --fix src/ lib/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -19,5 +21,9 @@
     "eslint-plugin-standard": "^3.0.1",
     "webpack": "^3.8.1",
     "webpack-dev-server": "^2.9.3"
+  },
+  "dependencies": {
+    "eslint": "^4.10.0",
+    "html-webpack-plugin": "^2.30.1"
   }
 }
