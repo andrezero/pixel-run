@@ -1,0 +1,55 @@
+# TODO
+
+- scrolling menu in splash - press [A] about the game [H] how to play [S] high-scores
+- press f to activate fps (local storage)
+- fix z-index bug
+- design 5 levels
+  - press [SPACE] to slow down
+  - slow down early to regain speed sooner
+  - if you slow down too much, you die
+  - believe in your self
+  - hidden level
+- split out library
+- about the game
+  - developed by andrezero
+  - made with javascript / canvas
+  - how much did you like this game?
+  - send me your feedback
+- header - andrezero (c) 2017
+- typeform (1,2,3)
+- heroku
+- github canvas lib features
+- canvas lib tests
+- press [K] to kill game
+- demo play hidden level
+- count deaths
+- show deaths
+- count time
+- show time
+- game over on time expired
+- show game over screen - score
+- show game over screen - animated score (distance - deaths)
+- press Y to play again
+- enter player1 name
+- store local scores
+- show high-scores
+- speed menu [1] 2 3
+- modify scoring - distance * speed - deaths
+- time extended
+- collect stars
+- collect jetpack
+  - jetpack once
+  - more jetpacks
+  - bouncing wall
+- collect ice
+  - freeze walls
+- collect keys
+  - open doors
+- portals
+- experiment with fluid
+- design map
+- go to unlocked level
+- finish with stars
+- multi-area map
+- graphics
+
