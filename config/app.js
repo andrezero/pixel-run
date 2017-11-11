@@ -21,7 +21,7 @@ var CONFIG = {
     demo: {},
     play: {
       speed: 1.5,
-      startLevel: 0,
+      startLevel: 5,
 
       // LEVEL 1
 
@@ -38,8 +38,10 @@ var CONFIG = {
           {pos: 'top', x: 100, h: 300, w: 400, color: 'rgb(50,50,180)'},
           {pos: 'top', x: 500, h: 400, w: 500, color: 'rgb(50,50,180)'},
           {pos: 'bottom', x: 0, h: 400, w: 100, color: 'rgb(30,30,150)'},
-          {pos: 'bottom', x: 100, h: 300, w: 400, color: 'rgb(30,30,150)'},
-          {pos: 'bottom', x: 500, h: 400, w: 500, color: 'rgb(30,30,150)'}
+          {pos: 'bottom', x: 100, h: 300, w: 410, color: 'rgb(30,30,150)'},
+          {pos: 'bottom', x: 510, h: 400, w: 170, color: 'rgb(30,30,150)'},
+          {pos: 'bottom', x: 680, h: 380, w: 50, color: 'rgb(30,30,150)'},
+          {pos: 'bottom', x: 730, h: 400, w: 250, color: 'rgb(30,30,150)'}
         ],
         drops: [
           {trigger: 300, pos: 400, freq: 1}
@@ -57,7 +59,10 @@ var CONFIG = {
           {pos: 'top', x: 0, h: 400, w: 500, color: 'rgb(50,50,180)'},
           {pos: 'top', x: 500, h: 300, w: 400, color: 'rgb(50,50,180)'},
           {pos: 'top', x: 900, h: 400, w: 100, color: 'rgb(50,50,180)'},
-          {pos: 'bottom', x: 0, h: 400, w: 500, color: 'rgb(30,30,150)'},
+          {pos: 'bottom', x: 0, h: 400, w: 260, color: 'rgb(30,30,150)'},
+          {pos: 'bottom', x: 260, h: 380, w: 50, color: 'rgb(30,30,150)'},
+          {pos: 'bottom', x: 310, h: 400, w: 190, color: 'rgb(30,30,150)'},
+          {pos: 'bottom', x: 500, h: 300, w: 400, color: 'rgb(30,30,150)'},
           {pos: 'bottom', x: 500, h: 300, w: 400, color: 'rgb(30,30,150)'},
           {pos: 'bottom', x: 900, h: 400, w: 100, color: 'rgb(30,30,150)'}
         ],
@@ -72,11 +77,15 @@ var CONFIG = {
         player: {},
         walls: [
           {pos: 'top', x: 250, h: 100, grow: 500, freq: 0.5},
-          {pos: 'bottom', x: 500, h: 200, grow: 300, freq: 0.3},
+          {pos: 'bottom', x: 500, h: 200, grow: 350, freq: 0.3},
           {pos: 'top', x: 650, h: 100, grow: 500, freq: 0.5},
           {pos: 'bottom', x: 900, h: 200, grow: 300, freq: 0.3},
-          {pos: 'top', x: 0, h: 400, w: 1000, color: 'rgb(50,50,180)'},
-          {pos: 'bottom', x: 0, h: 400, w: 1000, color: 'rgb(30,30,150)'}
+          {pos: 'top', x: 0, h: 400, w: 210, color: 'rgb(50,50,180)'},
+          {pos: 'top', x: 210, h: 350, w: 490, color: 'rgb(50,50,180)'},
+          {pos: 'top', x: 700, h: 400, w: 310, color: 'rgb(50,50,180)'},
+          {pos: 'bottom', x: 0, h: 400, w: 450, color: 'rgb(30,30,150)'},
+          {pos: 'bottom', x: 450, h: 350, w: 500, color: 'rgb(30,30,150)'},
+          {pos: 'bottom', x: 950, h: 400, w: 50, color: 'rgb(30,30,150)'}
         ],
         drops: [
           {trigger: 300, pos: 400, freq: 1}
@@ -102,14 +111,20 @@ var CONFIG = {
         speed: 1.15,
         player: {},
         walls: [
-          {pos: 'bottom', x: 240, h: 200, grow: 400, phase: 0, freq: 0.4},
+          {pos: 'bottom', x: 240, h: 200, grow: 500, phase: 0, freq: 0.4},
           {pos: 'top', x: 420, h: 300, grow: 300, phase: PI_2H, freq: 0.6},
           {pos: 'bottom', x: 420, h: 300, grow: 300, phase: PI_2H, freq: 0.6},
           {pos: 'bottom', x: 580, h: 400, grow: 400, phase: PI_1H, freq: 0.1},
           {pos: 'top', x: 800, h: 300, grow: 400, phase: PI_1H, freq: 0.2},
           {pos: 'bottom', x: 800, h: 300, grow: 400, phase: PI_1H, freq: 0.2},
-          {pos: 'top', x: 0, h: 400, w: 1000, color: 'rgb(50,50,180)'},
-          {pos: 'bottom', x: 0, h: 400, w: 1000, color: 'rgb(30,30,150)'}
+          {pos: 'top', x: 0, h: 400, w: 200, color: 'rgb(50,50,180)'},
+          {pos: 'top', x: 200, h: 350, w: 440, color: 'rgb(50,50,180)'},
+          {pos: 'top', x: 640, h: 400, w: 360, color: 'rgb(50,50,180)'},
+          {pos: 'bottom', x: 0, h: 400, w: 400, color: 'rgb(30,30,150)'},
+          {pos: 'bottom', x: 400, h: 380, w: 50, color: 'rgb(30,30,150)'},
+          {pos: 'bottom', x: 450, h: 400, w: 330, color: 'rgb(30,30,150)'},
+          {pos: 'bottom', x: 780, h: 380, w: 50, color: 'rgb(30,30,150)'},
+          {pos: 'bottom', x: 830, h: 400, w: 170, color: 'rgb(30,30,150)'}
         ],
         drops: [
           {trigger: 300, pos: 400, freq: 1}
@@ -118,15 +133,20 @@ var CONFIG = {
         speed: 1.16,
         player: {},
         walls: [
-          {pos: 'top', x: 150, h: 420, grow: 200, phase: PI_2H, freq: 0.5},
+          {pos: 'top', x: 150, h: 400, grow: 200, phase: PI_2H, freq: 0.5},
           {pos: 'top', x: 250, h: 400, grow: 200, phase: PI_1H, freq: 0.6},
           {pos: 'top', x: 350, h: 400, grow: 200, phase: PI_1H, freq: 0.4},
           {pos: 'top', x: 450, h: 380, grow: 200, phase: PI_3H, freq: 0.8},
           {pos: 'bottom', x: 550, h: 400, grow: 200, phase: PI_3H, freq: 0.5},
-          {pos: 'bottom', x: 700, h: 0, grow: 600, phase: PI_3H, freq: 0.5},
+          {pos: 'bottom', x: 600, h: 200, grow: 400, phase: PI_2H, freq: 0.4},
           {pos: 'bottom', x: 800, h: 300, w: 140, grow: 300, phase: PI_3H, freq: 0.3},
-          {pos: 'top', x: 0, h: 400, w: 1000, color: 'rgb(50,50,180)'},
-          {pos: 'bottom', x: 0, h: 400, w: 1000, color: 'rgb(30,30,150)'}
+          {pos: 'top', x: 0, h: 400, w: 120, color: 'rgb(50,50,180)'},
+          {pos: 'top', x: 120, h: 350, w: 370, color: 'rgb(50,50,180)'},
+          {pos: 'top', x: 490, h: 400, w: 170, color: 'rgb(50,50,180)'},
+          {pos: 'top', x: 640, h: 460, w: 360, color: 'rgb(50,50,180)'},
+          {pos: 'bottom', x: 0, h: 400, w: 520, color: 'rgb(30,30,150)'},
+          {pos: 'bottom', x: 520, h: 350, w: 120, color: 'rgb(30,30,150)'},
+          {pos: 'bottom', x: 640, h: 460, w: 360, color: 'rgb(30,30,150)'}
         ],
         drops: [
           {trigger: 300, pos: 400, freq: 1}
