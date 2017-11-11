@@ -77,7 +77,8 @@ class Intro {
       }
       const x = Math.round(ix * this._size);
       const y = Math.round(this._drops[ix].y);
-      ctx.fillRect(x - BOX_PADDING, y - BOX_PADDING, this._size + BOX_PADDING, this._size + BOX_PADDING);
+      const rect = [x - BOX_PADDING, y - BOX_PADDING, this._size + BOX_PADDING, this._size + BOX_PADDING];
+      ctx.fillRect(...this._canvas.scaleArray(rect));
     }
   }
 
