@@ -36,6 +36,8 @@ class Level {
 
     for (let ix = 0; ix < this._config.messages.length; ix++) {
       let msg = this._config.messages[ix];
+      msg.y = this._canvas.max.y * 0.95;
+      msg.size = 20;
       if (!msg.restarts || this._restarts >= msg.restarts) {
         let message = new Message(this._canvas, msg);
         this._objects.add(message);

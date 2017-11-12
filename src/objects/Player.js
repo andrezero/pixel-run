@@ -79,26 +79,26 @@ class Player {
       if (event.which === 32) {
         this._hold();
       }
-      if (event.which === 38 && !this._pressUp) {
-        this._pressUp = true;
-        this._up();
-      }
-      if (event.which === 40 && !this._pressDown) {
-        this._pressDown = true;
-        this._down();
-      }
+      // if (event.which === 38 && !this._pressUp) {
+      //   this._pressUp = true;
+      //   this._up();
+      // }
+      // if (event.which === 40 && !this._pressDown) {
+      //   this._pressDown = true;
+      //   this._down();
+      // }
     };
 
     this._keyup = (event) => {
       if (event.which === 32) {
         this._release();
       }
-      if (event.which === 38) {
-        this._pressUp = false;
-      }
-      if (event.which === 40) {
-        this._pressDown = false;
-      }
+      // if (event.which === 38) {
+      //   this._pressUp = false;
+      // }
+      // if (event.which === 40) {
+      //   this._pressDown = false;
+      // }
     };
 
     this._bindKeys();
@@ -182,57 +182,57 @@ class Player {
     } else if (this.pos.x > 1000) {
       this._onCompleteLevelCallback();
     } else {
-      if (this._pushUp) {
-        this._pushTimestsamp = timestamp;
-        this._pushUp = false;
-        console.log('push up');
-        if (!this._energy) {
-          this._energy = this._pushEnergy;
-          this._phase = PI_3H;
-          this._pushValid = true;
-          console.log('--valid');
-        } else if (this._wave < -1 * PUSH_AVAILABLE_WAVE_THRESHOLD) {
-          this._pushValid = true;
-          console.log('--valid', this._wave);
-          this._energy = Math.min(this._maxEnergy, this._energy * this._energyFactor);
-        } else {
-          console.log('-in-valid', this._wave);
-        }
-      } else if (this._pushDown) {
-        this._pushTimestsamp = timestamp;
-        this._pushDown = false;
-        console.log('push down');
-        if (!this._energy) {
-          this._energy = this._pushEnergy;
-          this._phase = PI_1H;
-          this._pushValid = true;
-          console.log('--valid');
-        } else if (this._wave > PUSH_AVAILABLE_WAVE_THRESHOLD) {
-          this._pushValid = true;
-          console.log('--valid', this._wave);
-          this._energy = Math.min(this._maxEnergy, this._energy * this._energyFactor);
-        } else {
-          console.log('-in-valid', this._wave);
-        }
-      }
+      // if (this._pushUp) {
+      //   this._pushTimestsamp = timestamp;
+      //   this._pushUp = false;
+      //   console.log('push up');
+      //   if (!this._energy) {
+      //     this._energy = this._pushEnergy;
+      //     this._phase = PI_3H;
+      //     this._pushValid = true;
+      //     console.log('--valid');
+      //   } else if (this._wave < -1 * PUSH_AVAILABLE_WAVE_THRESHOLD) {
+      //     this._pushValid = true;
+      //     console.log('--valid', this._wave);
+      //     this._energy = Math.min(this._maxEnergy, this._energy * this._energyFactor);
+      //   } else {
+      //     console.log('-in-valid', this._wave);
+      //   }
+      // } else if (this._pushDown) {
+      //   this._pushTimestsamp = timestamp;
+      //   this._pushDown = false;
+      //   console.log('push down');
+      //   if (!this._energy) {
+      //     this._energy = this._pushEnergy;
+      //     this._phase = PI_1H;
+      //     this._pushValid = true;
+      //     console.log('--valid');
+      //   } else if (this._wave > PUSH_AVAILABLE_WAVE_THRESHOLD) {
+      //     this._pushValid = true;
+      //     console.log('--valid', this._wave);
+      //     this._energy = Math.min(this._maxEnergy, this._energy * this._energyFactor);
+      //   } else {
+      //     console.log('-in-valid', this._wave);
+      //   }
+      // }
 
-      if (this._energy < 0) {
-        this._energy = 0;
-        this._swingTimestamp = null;
-        this._wavePrevious = 0;
-        this._wave = 0;
-        this._pushLock = false;
-      } else if (this._energy) {
-        this._swingTimestamp = this._swingTimestamp || timestamp - 1;
-        const swingDelta = (timestamp - this._swingTimestamp) / this._waveLength;
-        const wave = sin(swingDelta, -1, 1, this._phase);
-        this._wave = wave;
-        this.pos.y += wave * this._energy / this._waveLength;
-        if (this._wavePrevious && this._wavePrevious * this._wave < 0) {
-          this._pushLock = false;
-        }
-        this._wavePrevious = this._wave;
-      }
+      // if (this._energy < 0) {
+      //   this._energy = 0;
+      //   this._swingTimestamp = null;
+      //   this._wavePrevious = 0;
+      //   this._wave = 0;
+      //   this._pushLock = false;
+      // } else if (this._energy) {
+      //   this._swingTimestamp = this._swingTimestamp || timestamp - 1;
+      //   const swingDelta = (timestamp - this._swingTimestamp) / this._waveLength;
+      //   const wave = sin(swingDelta, -1, 1, this._phase);
+      //   this._wave = wave;
+      //   this.pos.y += wave * this._energy / this._waveLength;
+      //   if (this._wavePrevious && this._wavePrevious * this._wave < 0) {
+      //     this._pushLock = false;
+      //   }
+      //   this._wavePrevious = this._wave;
+      // }
 
       if (this._isHolding) {
         this._holdingTimestamp = this._holdingTimestamp || timestamp;

@@ -8,15 +8,18 @@ import { Fps } from '../lib/Fps.js';
 
 import { Intro } from './states/Intro.js';
 import { Splash } from './states/Splash.js';
+import { Demo } from './states/Demo.js';
+import { Instructions } from './states/Instructions.js';
 import { Game } from './states/Game.js';
+import { Scores } from './states/Scores.js';
 import { About } from './states/About.js';
 import { Credits } from './states/Credits.js';
 
 const SPEED = 1;
 const RESET_SEC = 0.1;
-const INTRO_SEC = 1;
-const SPLASH_SEC = 10000;
-const DEMO_SEC = 1;
+const INTRO_SEC = 0.5;
+const SPLASH_SEC = 3;
+const DEMO_SEC = 10;
 const CREDITS_SEC = 10;
 
 class Application {
@@ -54,11 +57,11 @@ class Application {
       'pause': ['play'],
       'game-over': ['play'],
       'scores': ['splash', 'demo', 'game-over'],
-      'about': ['splash', 'demo', 'game-over', 'scores'],
+      'about': ['splash', 'demo', 'game-over'],
       'credits': ['splash', 'game-over']
     };
 
-    this._state = new State('App', stateTranstions, this._debug);
+    this._state = new State('App', stateTranstions, true);
 
     this._objects = new ObjCollection();
     this._canvas = new Canvas(this._container, this._config.canvas);
@@ -139,7 +142,14 @@ class Application {
       splash = new Splash(this._canvas, this._config.state.splash, this._debug);
       this._objects.add(splash);
 
-      keydown = () => this.play();
+      keydown = (event) => {
+        switch (event.which) {
+          case 32: this.play(); break;
+          case 65: this.about(); break;
+          case 72: this.scores(); break;
+          case 73: this.instructions(); break;
+        }
+      };
       document.addEventListener('keydown', keydown);
 
       autoTransition = window.setTimeout(() => {
@@ -161,14 +171,25 @@ class Application {
   }
 
   demo () {
+    let demo;
     let autoTransition;
-    let click;
+    let keydown;
 
     const canEnterState = oldState => true;
 
     const enterState = () => {
-      click = () => this.play();
-      document.addEventListener('click', click);
+      const speed = this._speed * this._config.state.demo.speed;
+      demo = new Demo(this._canvas, speed, this._config.state.play.levels, this._config.state.demo);
+      this._objects.add(demo);
+
+      keydown = (event) => {
+        switch (event.which) {
+          case 27: this.splash(); break;
+          case 88: this.splash(); break;
+          case 32: this.play(); break;
+        }
+      };
+      document.addEventListener('keydown', keydown);
 
       autoTransition = window.setTimeout(() => {
         this.splash();
@@ -176,19 +197,39 @@ class Application {
     };
 
     const leaveState = (newState) => {
+      this._objects.destroyOne(demo);
       window.clearTimeout(autoTransition);
-      document.removeEventListener('click', click);
+      document.removeEventListener('keydown', keydown);
     };
 
     this._state.to('demo', canEnterState, enterState, leaveState);
   }
 
   instructions () {
+    let instructions;
+    let autoTransition;
+    let keydown;
+
     const canEnterState = oldState => true;
 
-    const enterState = () => {};
+    const enterState = () => {
+      instructions = new Instructions(this._canvas, this._config.state.instructions, this._debug);
+      this._objects.add(instructions);
 
-    const leaveState = (newState) => {};
+      keydown = (event) => {
+        switch (event.which) {
+          case 27: this.splash(); break;
+          case 88: this.splash(); break;
+          case 32: this.play(); break;
+        }
+      };
+      document.addEventListener('keydown', keydown);
+    };
+
+    const leaveState = (newState) => {
+      this._objects.destroyOne(instructions);
+      document.removeEventListener('keydown', keydown);
+    };
 
     this._state.to('instructions', canEnterState, enterState, leaveState);
   }
@@ -244,27 +285,58 @@ class Application {
   }
 
   scores () {
+    let scores;
+    let autoTransition;
+    let keydown;
+
     const canEnterState = oldState => true;
 
-    const enterState = () => {};
+    const enterState = () => {
+      scores = new Scores(this._canvas, this._config.state.scores, this._debug);
+      this._objects.add(scores);
 
-    const leaveState = (newState) => {};
+      keydown = (event) => {
+        switch (event.which) {
+          case 27: this.splash(); break;
+          case 88: this.splash(); break;
+          case 32: this.play(); break;
+        }
+      };
+      document.addEventListener('keydown', keydown);
+    };
+
+    const leaveState = (newState) => {
+      this._objects.destroyOne(scores);
+      document.removeEventListener('keydown', keydown);
+    };
 
     this._state.to('scores', canEnterState, enterState, leaveState);
   }
 
   about () {
     let about;
+    let autoTransition;
+    let keydown;
 
     const canEnterState = oldState => true;
 
     const enterState = () => {
       about = new About(this._canvas, this._config.state.about, this._debug);
       this._objects.add(about);
+
+      keydown = (event) => {
+        switch (event.which) {
+          case 27: this.splash(); break;
+          case 88: this.splash(); break;
+          case 32: this.play(); break;
+        }
+      };
+      document.addEventListener('keydown', keydown);
     };
 
     const leaveState = (newState) => {
       this._objects.destroyOne(about);
+      document.removeEventListener('keydown', keydown);
     };
 
     this._state.to('about', canEnterState, enterState, leaveState);

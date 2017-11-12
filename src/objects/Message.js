@@ -4,13 +4,16 @@ import { ObjCollection } from '../../lib/ObjCollection';
 import { sin, PI_3Q } from '../../lib/Maths';
 
 const PADDING = 10;
-const FONT_SIZE = 20;
-const MIN_FONT_PIXELS = 12;
+const DEFAULT_SIZE = 20;
+const MIN_FONT_PIXELS = 9;
 
 class Message {
   constructor (canvas, config) {
     this._canvas = canvas;
     this._config = config;
+
+    this._config.y = this._config.y || this._canvas.center.y;
+    this._config.size = this._config.size || DEFAULT_SIZE;
 
     this._text = config.text;
 
@@ -20,7 +23,6 @@ class Message {
     this._fontSize = null;
     this._bgColor = config.bgColor || 'rgba(0,0,0,0.4)';
     this._color = config.color || 'white';
-
     this._pos = null;
     this._scaledPos = null;
     this._dim = null;
@@ -47,9 +49,9 @@ class Message {
     const dim = this._dim;
 
     const x = pos.x - dim.width / 2 - PADDING;
-    const y = pos.y - 10;
-    const width = dim.width + 20;
-    const height = dim.actualBoundingBoxAscent + dim.actualBoundingBoxDescent + 20;
+    const y = pos.y - PADDING;
+    const width = dim.width + 2 * PADDING;
+    const height = this._fontSize + 2 * PADDING;
     const rect = [x, y, width, height];
 
     ctx.fillStyle = this._bgColor;
@@ -59,10 +61,10 @@ class Message {
   }
 
   resize () {
-    this._fontSize = this._canvas.scaleText(FONT_SIZE, MIN_FONT_PIXELS);
+    this._fontSize = this._canvas.scaleText(this._config.size, MIN_FONT_PIXELS);
     this._pos = {
       x: this._canvas.center.x,
-      y: this._canvas.max.y * 0.85
+      y: this._config.y
     };
 
     const ctx = this._ctx;

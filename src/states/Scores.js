@@ -5,14 +5,24 @@ import { ObjCollection } from '../../lib/ObjCollection';
 
 import { Header } from '../objects/Header';
 import { Message } from '../objects/Message';
+import { Menu } from '../objects/Menu';
 
-class About {
+class Scores {
   constructor (canvas, config) {
     this._canvas = canvas;
     this._config = config;
 
-    this._layer = canvas.newLayer('about');
+    this._layer = canvas.newLayer('scores');
     this._ctx = this._layer.ctx;
+
+    const stateTranstions = {
+      'intro': null,
+      'space': null,
+      'early': null,
+      'long': null
+    };
+
+    this._state = new State('Scores', stateTranstions, true);
 
     this._objects = new ObjCollection();
 
@@ -23,7 +33,7 @@ class About {
     this._slowDown = false;
     window.clearTimeout(this._timeoutId);
     this._timeoutId = window.setTimeout(() => {
-      this._objects.add(new Header(this._canvas, { y: this._canvas.max.y * 0.15, size: 90, text: 'about' }));
+      this._objects.add(new Header(this._canvas, { y: this._canvas.max.y * 0.15, size: 90, text: 'high scores' }));
       this._objects.add(new Message(this._canvas, { y: this._canvas.max.y * 0.05, text: '<X> exit' }));
       this._objects.add(new Message(this._canvas, { y: this._canvas.max.y * 0.95, size: 20, text: 'press <SPACE> to start' }));
       this._slowDown = true;
@@ -48,5 +58,5 @@ class About {
 }
 
 export {
-  About
+  Scores
 };

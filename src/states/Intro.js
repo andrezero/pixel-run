@@ -4,6 +4,8 @@
 
 import { ObjCollection } from '../../lib/ObjCollection';
 
+import { Message } from '../objects/Message';
+
 const RANDOM_HEIGHT = 20;
 const COLUMNS = 40;
 const DISTANCE = 3;
@@ -26,17 +28,18 @@ class Intro {
 
     this._slowDown = false;
 
-    this.resize();
+    this._objects = new ObjCollection();
 
-    this._scheduleSlowDown();
+    this.resize();
   }
 
-  _scheduleSlowDown () {
+  _delay () {
     this._slowDown = false;
     window.clearTimeout(this._timeoutId);
     this._timeoutId = window.setTimeout(() => {
       this._slowDown = true;
-    }, 1000);
+      this._objects.add(new Message(this._canvas, { y: this._canvas.max.y * 0.60, size: 15, text: '(c) 2017 andrezero' }));
+    }, 500);
   }
 
   // -- api
@@ -45,7 +48,7 @@ class Intro {
 
   update (delta, timestamp) {
     for (let ix = 0; ix < this._drops.length; ix++) {
-      if (this._drops[ix].y >= this._canvas.height) {
+      if (this._drops[ix].y >= this._canvas.max.y) {
         this._drops[ix].y = -1 * RANDOM_HEIGHT * Math.random();
       }
       if (!this._slowDown || Math.random() < 0.3) {
@@ -90,7 +93,7 @@ class Intro {
       this._slowDown = false;
     }
 
-    this._scheduleSlowDown();
+    this._delay();
   }
 
   destroy () {
