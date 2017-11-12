@@ -25,7 +25,7 @@ var CONFIG = {
       levels: level1.tiles
     },
     play: {
-      time: 5, // 213,
+      time: 213,
       speed: 1.2,
       startLevel: 0,
       levels: level1.tiles

@@ -164,7 +164,7 @@ class Application {
   splash () {
     let splash;
     let autoTransition;
-    let keydown;
+    let keyup;
 
     const canEnterState = oldState => true;
 
@@ -176,7 +176,7 @@ class Application {
       splash = new Splash(this._canvas, this._config.state.splash, this._debug);
       this._objects.add(splash);
 
-      keydown = (event) => {
+      keyup = (event) => {
         switch (event.which) {
           case 32: this.play(); break;
           case 65: this.about(); break;
@@ -184,7 +184,7 @@ class Application {
           case 73: this.instructions(); break;
         }
       };
-      document.addEventListener('keydown', keydown);
+      document.addEventListener('keyup', keyup);
 
       autoTransition = window.setTimeout(() => {
         this.demo();
@@ -198,7 +198,7 @@ class Application {
       }
       this._objects.destroyOne(splash);
       window.clearTimeout(autoTransition);
-      document.removeEventListener('keydown', keydown);
+      document.removeEventListener('keyup', keyup);
     };
 
     this._state.to('splash', canEnterState, enterState, leaveState);
@@ -207,7 +207,7 @@ class Application {
   demo () {
     let demo;
     let autoTransition;
-    let keydown;
+    let keyup;
 
     const canEnterState = oldState => true;
 
@@ -216,14 +216,14 @@ class Application {
       demo = new Demo(this._canvas, speed, this._config.state.play.levels, this._config.state.demo);
       this._objects.add(demo);
 
-      keydown = (event) => {
+      keyup = (event) => {
         switch (event.which) {
           case 27: this.splash(); break;
           case 88: this.splash(); break;
           case 32: this.play(); break;
         }
       };
-      document.addEventListener('keydown', keydown);
+      document.addEventListener('keyup', keyup);
 
       autoTransition = window.setTimeout(() => {
         this.splash();
@@ -233,7 +233,7 @@ class Application {
     const leaveState = (newState) => {
       this._objects.destroyOne(demo);
       window.clearTimeout(autoTransition);
-      document.removeEventListener('keydown', keydown);
+      document.removeEventListener('keyup', keyup);
     };
 
     this._state.to('demo', canEnterState, enterState, leaveState);
@@ -242,7 +242,7 @@ class Application {
   instructions () {
     let instructions;
     let autoTransition;
-    let keydown;
+    let keyup;
 
     const canEnterState = oldState => true;
 
@@ -250,19 +250,19 @@ class Application {
       instructions = new Instructions(this._canvas, this._config.state.instructions, this._debug);
       this._objects.add(instructions);
 
-      keydown = (event) => {
+      keyup = (event) => {
         switch (event.which) {
           case 27: this.splash(); break;
           case 88: this.splash(); break;
           case 32: this.play(); break;
         }
       };
-      document.addEventListener('keydown', keydown);
+      document.addEventListener('keyup', keyup);
     };
 
     const leaveState = (newState) => {
       this._objects.destroyOne(instructions);
-      document.removeEventListener('keydown', keydown);
+      document.removeEventListener('keyup', keyup);
     };
 
     this._state.to('instructions', canEnterState, enterState, leaveState);
@@ -313,7 +313,7 @@ class Application {
   gameOver () {
     let gameOver;
     let autoTransition;
-    let keydown;
+    let keyup;
 
     const canEnterState = oldState => true;
 
@@ -321,23 +321,21 @@ class Application {
       gameOver = new GameOver(this._canvas);
       this._objects.add(gameOver);
 
-      autoTransition = window.setTimeout(() => {
-        //
-      }, GAME_OVER_SEC * 1000);
-
-      keydown = (event) => {
+      keyup = (event) => {
         switch (event.which) {
           case 27: this.splash(); break;
           case 88: this.splash(); break;
           case 32: this.play(); break;
         }
       };
-      document.addEventListener('keydown', keydown);
+      autoTransition = window.setTimeout(() => {
+        document.addEventListener('keyup', keyup);
+      }, GAME_OVER_SEC * 1000);
     };
 
     const leaveState = (newState) => {
       window.clearTimeout(autoTransition);
-      document.removeEventListener('keydown', keydown);
+      document.removeEventListener('keyup', keyup);
       this._objects.destroyOne(this._game);
       this._objects.destroyOne(gameOver);
       this._game = null;
@@ -349,7 +347,7 @@ class Application {
   scores () {
     let scores;
     let autoTransition;
-    let keydown;
+    let keyup;
 
     const canEnterState = oldState => true;
 
@@ -357,19 +355,19 @@ class Application {
       scores = new Scores(this._canvas, this._config.state.scores, this._debug);
       this._objects.add(scores);
 
-      keydown = (event) => {
+      keyup = (event) => {
         switch (event.which) {
           case 27: this.splash(); break;
           case 88: this.splash(); break;
           case 32: this.play(); break;
         }
       };
-      document.addEventListener('keydown', keydown);
+      document.addEventListener('keyup', keyup);
     };
 
     const leaveState = (newState) => {
       this._objects.destroyOne(scores);
-      document.removeEventListener('keydown', keydown);
+      document.removeEventListener('keyup', keyup);
     };
 
     this._state.to('scores', canEnterState, enterState, leaveState);
@@ -378,7 +376,7 @@ class Application {
   about () {
     let about;
     let autoTransition;
-    let keydown;
+    let keyup;
 
     const canEnterState = oldState => true;
 
@@ -386,19 +384,19 @@ class Application {
       about = new About(this._canvas, this._config.state.about, this._debug);
       this._objects.add(about);
 
-      keydown = (event) => {
+      keyup = (event) => {
         switch (event.which) {
           case 27: this.splash(); break;
           case 88: this.splash(); break;
           case 32: this.play(); break;
         }
       };
-      document.addEventListener('keydown', keydown);
+      document.addEventListener('keyup', keyup);
     };
 
     const leaveState = (newState) => {
       this._objects.destroyOne(about);
-      document.removeEventListener('keydown', keydown);
+      document.removeEventListener('keyup', keyup);
     };
 
     this._state.to('about', canEnterState, enterState, leaveState);

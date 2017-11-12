@@ -33,10 +33,12 @@ class GameOver {
     window.clearTimeout(this._timeoutId);
     this._timeoutId = window.setTimeout(() => {
       this._objects.add(new Header(this._canvas, { y: this._canvas.max.y * 0.15, size: 90, text: 'game over' }));
-      this._objects.add(new Message(this._canvas, { y: this._canvas.max.y * 0.05, text: '<X> exit' }));
-      this._objects.add(new Message(this._canvas, { y: this._canvas.max.y * 0.95, size: 20, text: 'press <SPACE> to restart' }));
+      this._timeoutId = window.setTimeout(() => {
+        this._objects.add(new Message(this._canvas, { y: this._canvas.max.y * 0.05, text: '<X> exit' }));
+        this._objects.add(new Message(this._canvas, { y: this._canvas.max.y * 0.95, size: 20, text: 'press <SPACE> to restart' }));
+      }, 250);
       this._slowDown = true;
-    }, 500);
+    }, 750);
   }
 
   // -- AppObject API

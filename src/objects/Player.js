@@ -189,7 +189,7 @@ class Player {
     if (this._isDead) {
       this._deadTimestamp = this._deadTimestamp || timestamp;
     }
-    if (this._isColliding) {
+    if (this._isColliding && !this._isExploding) {
       if (timestamp - this._deadTimestamp > COLLINDING_MS) {
         this._isColliding = false;
         this._onDieCallback();
@@ -286,18 +286,19 @@ class Player {
     if (this._isExploding) {
       let scaleUp = easeInCubic((timestamp - this._deadTimestamp) / EXPLODNG_MS);
       let scaleDown = 1 - scaleUp;
-      red = Math.round(50 * scaleUp + 200);
-      green = Math.round(100 * scaleUp + 150);
-      blue = Math.round(100 * scaleUp + 150);
+      red = Math.round(1 * scaleUp + 250);
+      green = Math.round(50 * scaleUp + 200);
+      blue = Math.round(150 * scaleUp + 100);
       alpha = 0.5 + 0.5 * scaleDown;
       shadowBlur = Math.round(5 + scaleUp * 20);
       shadowColor = 'rgb(' + red + ',' + green + ',' + blue + ')';
       ctx.shadowOffsetY = Math.round(5 + 100 * scaleUp);
+      ctx.shadowOffsetX = 0;
 
-      rect[0] -= Math.round(scaleUp * 4);
-      rect[1] -= Math.round(scaleUp * rect[1] * 1);
-      rect[2] -= Math.round(this.size.w * scaleUp / 2);
-      rect[3] += Math.round(10 + this.size.h * scaleUp * 20);
+      rect[0] += Math.round(scaleUp * 40);
+      rect[1] -= Math.round(scaleUp * rect[1]);
+      rect[2] -= Math.round(2 + this.size.w * scaleUp / 2);
+      rect[3] += Math.round(2 + this.size.h * scaleUp * 20);
 
       shadowColor = 'hsl(40,50%,50%)';
     } else if (this._isColliding) {
