@@ -16,8 +16,8 @@ class Menu {
 
     this._fontSize = null;
     this._text = options.join(' : ');
-    this._bgColor = 'rgba(0,0,0,0.4)';
-    this._color = 'white';
+    this._bgColor = 'rgba(0,0,0,0.5)';
+    this._color = 'rgb(230, 230, 230)';
 
     this._pos = {
       x: this._canvas.max.x,

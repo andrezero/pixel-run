@@ -18,7 +18,7 @@ class Demo {
 
     this._ctx = canvas.ctx;
 
-    this._initialSpeed = speed || DEFAULT_SPEED;
+    this._initialSpeed = (speed || DEFAULT_SPEED) * (Math.random(0.5) + 0.5);
     this._speed = this._initialSpeed;
 
     this._objects = new ObjCollection();
@@ -26,10 +26,6 @@ class Demo {
     this._state = null;
     this._restarts = 0;
     this._levelNum = config.startLevel || 0;
-
-    // timeouts/intervals/animationFrame
-    this._intervalId = null;
-    this._frameId = null;
 
     this._startLevel();
 
@@ -69,7 +65,7 @@ class Demo {
     delete levelConfig.messages;
     this._player = new Player(this._canvas, 4 * speed, player);
     this._objects.add(this._player, 1);
-    this._level = new Level(this._canvas, this._levelNum, this._restarts, this._player, speed, levelConfig);
+    this._level = new Level(this._canvas, -1, null, this._player, speed, levelConfig);
     this._objects.add(this._level, 0);
     this._player.onDie(() => {
       this.deaths++;

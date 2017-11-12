@@ -148,8 +148,6 @@ class Player {
 
   // -- public
 
-  // - setup
-
   onDie (onDieCallback) {
     this._onDieCallback = onDieCallback;
   }

@@ -27,7 +27,9 @@ class Level {
     this._timestamp = null;
     this._objects = new ObjCollection();
 
-    this._objects.add(new LevelNumber(canvas, config, number + 1, !this._restarts));
+    if (number >= 0) {
+      this._objects.add(new LevelNumber(canvas, config, number + 1, !this._restarts));
+    }
 
     for (let ix = 0; ix < config.walls.length; ix++) {
       let wall = new Wall(canvas, this._speed, config.walls[ix]);

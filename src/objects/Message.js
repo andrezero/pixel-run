@@ -22,7 +22,7 @@ class Message {
 
     this._fontSize = null;
     this._bgColor = config.bgColor || 'rgba(0,0,0,0.4)';
-    this._color = config.color || 'white';
+    this._color = config.color || 'rgb(230, 230, 230)';
     this._pos = null;
     this._scaledPos = null;
     this._dim = null;

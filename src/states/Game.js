@@ -4,6 +4,7 @@ import { ObjCollection } from '../../lib/ObjCollection';
 
 import { Level } from '../objects/Level';
 import { Player } from '../objects/Player';
+import { Deaths } from '../objects/Deaths';
 
 const GAME_OVER_SEC = 1000;
 const DEFAULT_SPEED = 1;
@@ -22,12 +23,9 @@ class Game {
     this._levels = config.levels;
 
     this._state = null;
+    this._deaths = 0;
     this._restarts = 0;
     this._levelNum = config.startLevel || 0;
-
-    // timeouts/intervals/animationFrame
-    this._intervalId = null;
-    this._frameId = null;
 
     this._startLevel();
   }
@@ -56,7 +54,12 @@ class Game {
     this._level = new Level(this._canvas, this._levelNum, this._restarts, this._player, speed, levelConfig);
     this._objects.add(this._level, 0);
     this._player.onDie(() => {
-      this.deaths++;
+      if (!this._deaths) {
+        this._deathsDisplay = new Deaths(this._canvas);
+        this._objects.add(this._deathsDisplay, 0);
+      }
+      this._deaths++;
+      this._deathsDisplay.setNumber(this._deaths);
       this._restarts++;
       this._restartLevel();
     });

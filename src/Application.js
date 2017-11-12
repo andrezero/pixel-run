@@ -18,8 +18,8 @@ import { Credits } from './states/Credits.js';
 const SPEED = 1;
 const RESET_SEC = 0.1;
 const INTRO_SEC = 0.5;
-const SPLASH_SEC = 3;
-const DEMO_SEC = 10;
+const SPLASH_SEC = 4;
+const DEMO_SEC = 5;
 const CREDITS_SEC = 10;
 
 class Application {
