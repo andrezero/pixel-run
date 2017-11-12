@@ -47,6 +47,16 @@ class Level {
     }
   }
 
+  // -- public
+
+  hideMessages () {
+    this._objects.each((item) => {
+      if (item.obj.constructor.name === 'Message') {
+        item.obj.hide();
+      }
+    });
+  }
+
   // -- AppObjec API
 
   update (delta, timestamp) {

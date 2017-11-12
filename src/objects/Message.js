@@ -27,6 +27,7 @@ class Message {
     this._scaledPos = null;
     this._dim = null;
 
+    this._hidden = false;
     this._requireRender = false;
 
     this.resize();
@@ -35,6 +36,11 @@ class Message {
   // -- private
 
   // -- api
+
+  hide () {
+    this._hidden = true;
+    this._requireRender = true;
+  }
 
   // -- AppObject API
 
@@ -54,10 +60,14 @@ class Message {
     const height = this._fontSize + 2 * PADDING;
     const rect = [x, y, width, height];
 
-    ctx.fillStyle = this._bgColor;
-    ctx.fillRect(...rect);
-    ctx.fillStyle = this._color;
-    ctx.fillText(this._text, pos.x, pos.y);
+    ctx.clearRect(...rect);
+
+    if (!this._hidden) {
+      ctx.fillStyle = this._bgColor;
+      ctx.fillRect(...rect);
+      ctx.fillStyle = this._color;
+      ctx.fillText(this._text, pos.x, pos.y);
+    }
   }
 
   resize () {

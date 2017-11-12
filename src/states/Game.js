@@ -5,6 +5,7 @@ import { ObjCollection } from '../../lib/ObjCollection';
 import { Level } from '../objects/Level';
 import { Player } from '../objects/Player';
 import { Deaths } from '../objects/Deaths';
+import { TimeLeft } from '../objects/TimeLeft';
 
 const GAME_OVER_SEC = 1000;
 const DEFAULT_SPEED = 1;
@@ -20,6 +21,18 @@ class Game {
 
     this._objects = new ObjCollection();
 
+    this._timeLeft = new TimeLeft(this._canvas, null, config.time);
+    this._objects.add(this._timeLeft);
+    this._timeLeft.onTime(() => {
+      this._objects.destroyOne(this._timeLeft);
+      if (this._level) {
+        this._level.hideMessages();
+      }
+      this._gameOver();
+    });
+
+    this._onGameOverCallback = null;
+
     this._levels = config.levels;
 
     this._state = null;
@@ -31,6 +44,12 @@ class Game {
   }
 
   // - state
+
+  _gameOver () {
+    this._state = 'game-over';
+    this._onGameOverCallback();
+    this._player.explode();
+  }
 
   _destroyLevel () {
     this._objects.destroyOne(this._level);
@@ -73,16 +92,15 @@ class Game {
 
   // -- api
 
-  gameOver () {
-    this._player = null;
-    window.clearInterval(this._enemiesIntervalId);
-
-    window.setTimeout(() => {
-      this.init();
-    }, GAME_OVER_SEC * 1000);
+  onGameOver (onGameOverCallback) {
+    this._onGameOverCallback = onGameOverCallback;
   }
 
   // -- AppObject API
+
+  destroy () {
+    this._onGameOverCallback = null;
+  }
 }
 
 export {

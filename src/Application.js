@@ -11,6 +11,7 @@ import { Splash } from './states/Splash.js';
 import { Demo } from './states/Demo.js';
 import { Instructions } from './states/Instructions.js';
 import { Game } from './states/Game.js';
+import { GameOver } from './states/GameOver.js';
 import { Scores } from './states/Scores.js';
 import { About } from './states/About.js';
 import { Credits } from './states/Credits.js';
@@ -20,6 +21,7 @@ const RESET_SEC = 0.1;
 const INTRO_SEC = 0.5;
 const SPLASH_SEC = 4;
 const DEMO_SEC = 5;
+const GAME_OVER_SEC = 1;
 const CREDITS_SEC = 10;
 
 class Application {
@@ -39,6 +41,7 @@ class Application {
         'demo',
         'instructions',
         'scores',
+        'game-over',
         'about',
         'credits'
       ],
@@ -268,12 +271,17 @@ class Application {
   play () {
     let game;
 
+    const handleGameOver = () => {
+      this.gameOver();
+    };
+
     const canEnterState = oldState => true;
 
     const enterState = () => {
       if (!this._game) {
         const speed = this._speed * this._config.state.play.speed;
         game = new Game(this._canvas, speed, this._config.state.play, this._debug);
+        game.onGameOver(handleGameOver);
         this._game = game;
         this._objects.add(game);
       } else {
@@ -285,10 +293,7 @@ class Application {
       if (newState === 'pause' || newState === 'instructions') {
         game.pause();
       } else {
-        if (this._lastGame) {
-          this._objects.destroyOne(this._lastGame);
-        }
-        this._lastGame = game;
+        this._lastGame = this._game;
       }
     };
 
@@ -306,11 +311,37 @@ class Application {
   }
 
   gameOver () {
+    let gameOver;
+    let autoTransition;
+    let keydown;
+
     const canEnterState = oldState => true;
 
-    const enterState = () => {};
+    const enterState = () => {
+      gameOver = new GameOver(this._canvas);
+      this._objects.add(gameOver);
 
-    const leaveState = (newState) => {};
+      autoTransition = window.setTimeout(() => {
+        //
+      }, GAME_OVER_SEC * 1000);
+
+      keydown = (event) => {
+        switch (event.which) {
+          case 27: this.splash(); break;
+          case 88: this.splash(); break;
+          case 32: this.play(); break;
+        }
+      };
+      document.addEventListener('keydown', keydown);
+    };
+
+    const leaveState = (newState) => {
+      window.clearTimeout(autoTransition);
+      document.removeEventListener('keydown', keydown);
+      this._objects.destroyOne(this._game);
+      this._objects.destroyOne(gameOver);
+      this._game = null;
+    };
 
     this._state.to('game-over', canEnterState, enterState, leaveState);
   }

@@ -14,7 +14,7 @@ class Deaths {
     this._config = config;
     this._number = number;
 
-    this._layer = canvas.newLayer('level-num');
+    this._layer = canvas.newLayer('deaths');
     this._ctx = this._layer.ctx;
 
     this._maxFontSize = null;
@@ -55,11 +55,9 @@ class Deaths {
     const y = this._canvas.scaleValue(this._canvas.max.y * 0.02);
 
     const dim = this._dim;
-    const width = WIDTH + dim.width - 2;
-    const height = this._fontSize - 3;
-    const rect = [x - PADDING, y - PADDING, width + PADDING * 4, height + PADDING * 2 - 3];
-    const rect1 = [rect[0] + 10, rect[1], 5, 25];
-    const rect2 = [rect[0], rect[1] + 10, 25, 5];
+    const width = WIDTH + dim.width - 2 + PADDING * 4;
+    const height = this._fontSize + PADDING;
+    const rect = [x - PADDING, y - PADDING, width, height];
 
     ctx.clearRect(...rect);
 
@@ -85,8 +83,6 @@ class Deaths {
 
   destroy () {
     this._canvas.destroyLayer(this._layer);
-
-    window.clearTimeout(this._timeoutId);
   }
 }
 

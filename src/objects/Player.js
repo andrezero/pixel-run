@@ -17,7 +17,8 @@ const MAX_ENERGY = 150;
 const WAVE_LENGTH = 2;
 const PUSH_AVAILABLE_WAVE_THRESHOLD = 0.3;
 const PUSH_MS = 150;
-const DYING_MS = 500;
+const COLLINDING_MS = 500;
+const EXPLODNG_MS = 750;
 
 class Player {
   constructor (canvas, speed, config) {
@@ -72,8 +73,10 @@ class Player {
     this._pushDown = false;
     this._pushLock = false;
 
-    this._isDying = null;
-    this._dyingTimestamp = null;
+    this._isDead = null;
+    this._isColliding = null;
+    this._isExploding = null;
+    this._deadTimestamp = null;
 
     this._keydown = (event) => {
       if (event.which === 32) {
@@ -115,14 +118,14 @@ class Player {
   }
 
   _hold () {
-    if (!this._isHolding && !this._isDying) {
+    if (!this._isHolding && !this._isDead) {
       this._isHolding = true;
       this._holdingTimestamp = null;
     }
   }
 
   _release () {
-    if (this._isHolding && !this._isDying) {
+    if (this._isHolding && !this._isDead) {
       this._isHolding = false;
       this._isAccelerating = true;
       this._acceleratingTimestamp = null;
@@ -131,7 +134,7 @@ class Player {
   }
 
   _up () {
-    if (!this._isDying && !this._pushLock) {
+    if (!this._isColliding && !this._isDead) {
       this._pushUp = true;
       this._pushValid = false;
       this._pushLock = true;
@@ -139,7 +142,7 @@ class Player {
   }
 
   _down () {
-    if (!this._isDying && !this._pushLock) {
+    if (!this._isColliding && !this._isDead) {
       this._pushDown = true;
       this._pushValid = false;
       this._pushLock = true;
@@ -159,11 +162,23 @@ class Player {
   // - state
 
   die () {
-    if (this._isDying) {
+    if (this._isDead) {
       return;
     }
     this._unbindKeys();
-    this._isDying = true;
+    this._isDead = true;
+    this._isColliding = true;
+    this._isHolding = false;
+    this._isAccelerating = false;
+  }
+
+  explode () {
+    if (this._isExploding) {
+      return;
+    }
+    this._unbindKeys();
+    this._isDead = true;
+    this._isExploding = true;
     this._isHolding = false;
     this._isAccelerating = false;
   }
@@ -171,13 +186,17 @@ class Player {
   // -- AppObject API
 
   update (delta, timestamp) {
-    if (this._isDying) {
-      this._dyingTimestamp = this._dyingTimestamp || timestamp;
-      if (timestamp - this._dyingTimestamp > DYING_MS) {
-        this._isDying = false;
+    if (this._isDead) {
+      this._deadTimestamp = this._deadTimestamp || timestamp;
+    }
+    if (this._isColliding) {
+      if (timestamp - this._deadTimestamp > COLLINDING_MS) {
+        this._isColliding = false;
         this._onDieCallback();
       }
-    } else if (this.pos.x > 1000) {
+    } else if (this._isExploding) {
+      this.pos.x = this.pos.x + SPEED_FACTOR * this._speed * delta * 0.2;
+    } else if (!this._isDead && this.pos.x > 1000) {
       this._onCompleteLevelCallback();
     } else {
       // if (this._pushUp) {
@@ -264,8 +283,25 @@ class Player {
     let rgba;
     let shadowBlur;
     let shadowColor;
-    if (this._isDying) {
-      let scaleUp = easeInCubic((timestamp - this._dyingTimestamp) / DYING_MS);
+    if (this._isExploding) {
+      let scaleUp = easeInCubic((timestamp - this._deadTimestamp) / EXPLODNG_MS);
+      let scaleDown = 1 - scaleUp;
+      red = Math.round(50 * scaleUp + 200);
+      green = Math.round(100 * scaleUp + 150);
+      blue = Math.round(100 * scaleUp + 150);
+      alpha = 0.5 + 0.5 * scaleDown;
+      shadowBlur = Math.round(5 + scaleUp * 20);
+      shadowColor = 'rgb(' + red + ',' + green + ',' + blue + ')';
+      ctx.shadowOffsetY = Math.round(5 + 100 * scaleUp);
+
+      rect[0] -= Math.round(scaleUp * 4);
+      rect[1] -= Math.round(scaleUp * rect[1] * 1);
+      rect[2] -= Math.round(this.size.w * scaleUp / 2);
+      rect[3] += Math.round(10 + this.size.h * scaleUp * 20);
+
+      shadowColor = 'hsl(40,50%,50%)';
+    } else if (this._isColliding) {
+      let scaleUp = easeInCubic((timestamp - this._deadTimestamp) / COLLINDING_MS);
       let scaleDown = 1 - scaleUp;
       red = Math.round(50 * scaleUp + 200);
       green = Math.round(150 * scaleDown + 50);
@@ -295,7 +331,6 @@ class Player {
 
     if (timestamp - this._pushTimestsamp < PUSH_MS) {
       if (this._pushValid) {
-        console.log('white', this._energy);
         red = Math.max(255, red * 2);
         green = Math.max(255, green * 2);
       } else {
@@ -317,7 +352,7 @@ class Player {
     let showTriangle = this._energy && Math.abs(this._wave) > PUSH_AVAILABLE_WAVE_THRESHOLD;
     showTriangle = showTriangle || timestamp - this._pushTimestsamp < PUSH_MS;
 
-    if (!this._isDying && showTriangle) {
+    if (!this._isColliding && showTriangle) {
       const center = {
         x: rect[0] + rect[2] / 2,
         y: rect[1] + rect[3] / 2
