@@ -5,7 +5,7 @@ import { level as level1 } from './level1';
 import { level as level2 } from './level2';
 
 var CONFIG = {
-  debug: true,
+  debug: false,
   speed: 1,
   frame: {
     interval: false,
@@ -32,7 +32,9 @@ var CONFIG = {
     pause: {},
     gameOver: {},
     scores: {},
-    about: {},
+    about: {
+      feedback: 'https://andrezero.typeform.com/to/rTl0RU'
+    },
     credits: {}
   }
 };

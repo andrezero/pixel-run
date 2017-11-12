@@ -1,6 +1,5 @@
 # TODO
 
-- press f to activate fps (local storage)
 - split out library
 - about the game
   - developed by andrezero
@@ -11,7 +10,6 @@
 - heroku
 - github canvas lib readme - features, todo
 - canvas lib tests
-- press [CTRL+K] to kill game
 - count time
 - show time
 - game over on time expired

@@ -74,18 +74,49 @@ class Application {
 
     // -- main
 
+    const keypress = (event) => {
+      if (!event.ctrlKey) {
+        return;
+      }
+      switch (event.code) {
+        case 'KeyK': this.reset(); break;
+        case 'KeyF': this.toggleFps(); break;
+      }
+    };
+    document.addEventListener('keypress', keypress);
+
     this.reset();
   }
 
   // -- public
+  showFps () {
+    if (!this._fps) {
+      this._fps = new Fps(this._canvas);
+      this._objects.add(this._fps);
+    }
+  }
+
+  hideFps () {
+    if (this._fps) {
+      this._objects.destroyOne(this._fps);
+      this._fps = null;
+    }
+  }
+
+  toggleFps () {
+    if (this._fps) {
+      this.hideFps();
+    } else {
+      this.showFps();
+    }
+  }
 
   reset () {
     const enterState = () => {
       this._objects.destroyAll();
 
       if (this._config.debug) {
-        this._fps = new Fps(this._canvas);
-        this._objects.add(this._fps);
+        this.showFps();
       }
 
       this._game = null;
