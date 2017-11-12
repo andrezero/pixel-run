@@ -44,14 +44,14 @@ class LevelNumber {
     const dim = this._dim;
     const width = dim.width - 2;
     const height = this._fontSize - 3;
-    const rect = [x - width - PADDING, y - PADDING, width + PADDING * 2, height + PADDING * 2];
+    const rect = [x - width - PADDING, y - PADDING, width + PADDING * 4, height + PADDING * 2 - 3];
 
     ctx.clearRect(...rect);
 
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
     ctx.fillRect(...rect);
     ctx.fillStyle = 'hsl(' + hue + ',95%,60%)';
-    ctx.fillText(this._number, x, y);
+    ctx.fillText('L' + this._number, x + PADDING, y);
   }
 
   resize () {
@@ -64,7 +64,7 @@ class LevelNumber {
     ctx.textAlign = 'right';
     ctx.textBaseline = 'top';
 
-    this._dim = this._ctx.measureText(this._number);
+    this._dim = this._ctx.measureText('L' + this._number);
   }
 
   destroy () {

@@ -57,7 +57,7 @@ class Deaths {
     const dim = this._dim;
     const width = WIDTH + dim.width - 2;
     const height = this._fontSize - 3;
-    const rect = [x - PADDING, y - PADDING, width + PADDING * 4, height + PADDING * 2 - 5];
+    const rect = [x - PADDING, y - PADDING, width + PADDING * 4, height + PADDING * 2 - 3];
     const rect1 = [rect[0] + 10, rect[1], 5, 25];
     const rect2 = [rect[0], rect[1] + 10, 25, 5];
 
@@ -66,7 +66,7 @@ class Deaths {
     ctx.fillStyle = 'rgba(10, 10, 10, 0.5)';
     ctx.fillRect(...rect);
     ctx.fillStyle = 'rgb(230, 230, 230)';
-    ctx.fillText(this._number, x + WIDTH, y);
+    ctx.fillText(this._number, x + WIDTH + PADDING, y);
     ctx.fillText('x', x, y);
   }
 
