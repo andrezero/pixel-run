@@ -1,5 +1,6 @@
 # TODO
 
+- fix timer not scaling out on small rez
 - split out library
 - about the game
   - developed by andrezero
@@ -9,8 +10,6 @@
 - heroku
 - github canvas lib readme - features, todo
 - canvas lib tests
-- show game over screen - score
-- show game over screen - animated score (distance - deaths)
 - enter player1 name
 - store local scores
 - show high-scores

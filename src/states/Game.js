@@ -25,13 +25,11 @@ class Game {
     this._objects.add(this._timeLeft);
     this._timeLeft.onTime(() => {
       this._objects.destroyOne(this._timeLeft);
-      if (this._level) {
-        this._level.hideMessages();
-      }
       this._gameOver();
     });
 
     this._onGameOverCallback = null;
+    this._onCompleteCallback = null;
 
     this._levels = config.levels;
 
@@ -39,6 +37,7 @@ class Game {
     this._deaths = 0;
     this._restarts = 0;
     this._levelNum = config.startLevel || 0;
+    this._isComplete = false;
 
     this._startLevel();
   }
@@ -46,9 +45,27 @@ class Game {
   // - state
 
   _gameOver () {
+    if (this._level) {
+      this._level.freeze();
+    }
+    if (this._deathsDisplay) {
+      this._objects.destroyOne(this._deathsDisplay);
+    }
     this._state = 'game-over';
     this._onGameOverCallback();
     this._player.explode();
+  }
+
+  _complete () {
+    if (this._level) {
+      this._level.freeze();
+    }
+    if (this._deathsDisplay) {
+      this._objects.destroyOne(this._deathsDisplay);
+    }
+    this._state = 'game-over';
+    this._onCompleteCallback();
+    this._player.expand();
   }
 
   _destroyLevel () {
@@ -82,11 +99,18 @@ class Game {
       this._restarts++;
       this._restartLevel();
     });
-    this._player.onCompleteLevel(() => {
-      this._destroyLevel();
+    this._level.onComplete(() => {
       this._restarts = 0;
-      this._levelNum++;
-      this._startLevel();
+      if (this._levelNum + 1 < this._levels.length) {
+        this._destroyLevel();
+        this._levelNum++;
+        this._startLevel();
+      } else {
+        this._timeLeft.stop();
+        this._objects.destroyOne(this._timeLeft);
+        this._isComplete = true;
+        this._complete();
+      }
     });
   }
 
@@ -96,10 +120,24 @@ class Game {
     this._onGameOverCallback = onGameOverCallback;
   }
 
+  onComplete (onCompleteCallback) {
+    this._onCompleteCallback = onCompleteCallback;
+  }
+
+  getScore () {
+    return {
+      complete: this._isComplete,
+      time: this._timeLeft.getTime(),
+      level: this._levelNum,
+      deaths: this._deaths
+    };
+  }
+
   // -- AppObject API
 
   destroy () {
     this._onGameOverCallback = null;
+    this._onCompleteCallback = null;
   }
 }
 

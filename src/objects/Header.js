@@ -48,6 +48,7 @@ class Header {
 
   render (delta, timestamp) {
     const ctx = this._ctx;
+    const canvas = this._canvas;
 
     if (this._slowDown && this._skipped++ < this._skip) {
       return;
@@ -59,10 +60,10 @@ class Header {
     const pos = this._scaledPos;
     const slowDown = this._slowDown;
 
-    let x = Math.cos(iteration * (slowDown ? 5 : 50)) * 10 + pos.x;
-    let y = Math.sin(iteration * (slowDown ? 5 : 50)) * 10 + pos.y;
+    let x = canvas.scaleValue(Math.cos(iteration * (slowDown ? 5 : 50)) * 5) + pos.x;
+    let y = canvas.scaleValue(Math.sin(iteration * (slowDown ? 5 : 50)) * 5) + pos.y;
     const alpha = slowDown ? 0.6 : 0.9;
-    ctx.shadowBlur = slowDown ? 10 : 2;
+    ctx.shadowBlur = slowDown ? 4 : 2;
     ctx.shadowColor = 'hsl(40,50%,50%)';
     ctx.fillStyle = 'hsla(' + iteration * 3 % 100 + ',99%,50%,' + alpha + ')';
     ctx.fillText(this._text, Math.round(x), Math.round(y));

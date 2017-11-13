@@ -143,6 +143,21 @@ const level = {
     drops: [
       {trigger: 300, pos: 400, freq: 1}
     ]
+  }, {
+    speed: 1.5,
+    maxX: 350,
+    player: {},
+    walls: [
+      {pos: 'top', x: 0, h: 460, w: 40, color: 'rgb(50,50,180)'},
+      {pos: 'bottom', x: 0, h: 460, w: 40, color: 'rgb(30,30,150)'},
+      {pos: 'top', x: 40, h: 40, w: 920, color: 'rgb(50,50,180)'},
+      {pos: 'bottom', x: 40, h: 40, w: 920, color: 'rgb(30,30,150)'},
+      {pos: 'top', x: 960, h: 500, w: 40, color: 'rgb(50,50,180)'},
+      {pos: 'bottom', x: 960, h: 500, w: 40, color: 'rgb(30,30,150)'}
+    ],
+    drops: [
+      {trigger: 300, pos: 400, freq: 1}
+    ]
   }]
 };
 

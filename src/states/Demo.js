@@ -72,7 +72,7 @@ class Demo {
       this._restarts++;
       this._restartLevel();
     });
-    this._player.onCompleteLevel(() => {
+    this._level.onComplete(() => {
       this._speed = this._initialSpeed;
       this._destroyLevel();
       this._restarts = 0;

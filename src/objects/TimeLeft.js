@@ -30,7 +30,6 @@ class TimeLeft {
     this._timeBar = new TimeBar(this._canvas, null, this._time);
     this._objects.add(this._timeBar);
 
-    this._over = false;
     this._onTimeCallback = null;
 
     this._maxFontSize = null;
@@ -38,8 +37,8 @@ class TimeLeft {
 
     this._dim = null;
 
+    this._stopped = false;
     this._timestamp = null;
-
     this._requireRender = true;
 
     this.resize();
@@ -58,13 +57,21 @@ class TimeLeft {
     this._onTimeCallback = onTimeCallback;
   }
 
+  getTime () {
+    return this._timeLeft;
+  }
+
+  stop () {
+    this._stopped = true;
+  }
+
   // -- AppObject API
 
   update (delta, timestamp) {
     if (!this._timestamp) {
       this._timestamp = timestamp;
     }
-    if (!this._over) {
+    if (!this._stopped) {
       const previousTimeLeft = this._timeLeft;
       this._timeLeft = this._time - Math.round((timestamp - this._timestamp) / 1000);
       this._requireRender = this._timeLeft !== previousTimeLeft;
@@ -72,7 +79,7 @@ class TimeLeft {
         this._timeBar.setValue(this._timeLeft);
       }
       if (this._timeLeft <= 0) {
-        this._over = true;
+        this._stopped = true;
         this._onTimeCallback();
       }
     }
@@ -88,7 +95,7 @@ class TimeLeft {
     const dim = this._dim;
 
     const x = this._canvas.scaleValue(this._canvas.center.x - dim.width / 2) - PADDING * 2;
-    const y = this._canvas.scaleValue(this._canvas.max.y * 0.02);
+    const y = this._canvas.scaleValue(45);
 
     const width = dim.width + PADDING * 3;
     const height = this._fontSize + PADDING;

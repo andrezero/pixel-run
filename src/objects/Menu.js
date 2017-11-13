@@ -24,7 +24,6 @@ class Menu {
       y: this._canvas.max.y * 0.05
     };
 
-    this._scaledPos = null;
     this._dim = null;
 
     this._pauseTimestamp = null;
@@ -41,7 +40,6 @@ class Menu {
   update (delta, timestamp) {
     if (!this._pauseTimestamp) {
       this._pos.x = this._pos.x - delta / 1.5;
-      this._scaledPos = this._canvas.scalePoint(this._pos);
     }
 
     if (!this._pauseTimestamp && this._pos.x < this._canvas.center.x - this._canvas.normalValue(this._dim.width) / 2) {
@@ -52,22 +50,23 @@ class Menu {
 
   render (delta, timestamp) {
     const ctx = this._ctx;
+    const canvas = this._canvas;
 
-    const pos = this._scaledPos;
     const dim = this._dim;
 
-    const x = this._canvas.scaleValue(pos.x) - 3 * PADDING;
-    const y = this._canvas.scaleValue(pos.y);
-    const width = dim.width + 2 * PADDING;
-    const height = this._fontSize + 2 * PADDING;
-    const rect = [x - PADDING, y - PADDING, width, height];
+    const x = this._pos.x;
+    const y = this._pos.y;
+
+    const width = canvas.normalValue(dim.width) + 2 * PADDING;
+    const height = canvas.normalValue(this._fontSize) + 2 * PADDING;
+    const rect = canvas.scaleArray([x - PADDING, y - PADDING, width, height]);
 
     ctx.clearRect(...(this._lastRect || rect));
 
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
     ctx.fillRect(...rect);
     ctx.fillStyle = this._color;
-    ctx.fillText(this._text, x, y);
+    ctx.fillText(this._text, canvas.scaleValue(x), canvas.scaleValue(y));
 
     this._lastRect = rect;
     this._lastRect[2] += 2;

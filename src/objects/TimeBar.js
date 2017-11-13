@@ -41,12 +41,14 @@ class TimeBar {
     const ratio = 1 - (this._max - this._value) / this._max;
 
     const x = this._canvas.scaleValue(this._canvas.center.x - WIDTH / 2);
-    const y = this._canvas.scaleValue(this._canvas.max.y * 0.05);
-    const width = Math.round(WIDTH * ratio);
+    const y = this._canvas.scaleValue(20);
+    const width = this._canvas.scaleValue(WIDTH);
+    const height = this._canvas.scaleValue(HEIGHT);
+    const innerWidth = Math.round(width * ratio);
     const hue = Math.round(ratio * 100 + 30 * sin(timestamp * (1 - ratio)));
-    const rect = [x, y, WIDTH, HEIGHT];
-    const rect2 = [x + 1, y + 1, WIDTH - 2, HEIGHT - 2];
-    const rect3 = [x + 2, y + 2, width - 4, HEIGHT - 4];
+    const rect = [x, y, width, height];
+    const rect2 = [x + 1, y + 1, width - 2, height - 2];
+    const rect3 = [x + 2, y + 2, innerWidth - 4, height - 4];
 
     ctx.clearRect(...rect);
 

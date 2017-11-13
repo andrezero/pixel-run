@@ -19,16 +19,20 @@ class Level {
     config.walls = config.walls || [];
     config.drops = config.drops || [];
     config.messages = config.messages || [];
+    config.maxX = config.maxX || 1000;
     this._config = config;
 
     this._ctx = canvas.ctx;
+
+    this._onCompleteCallback = null;
 
     this._speed = speed || DEFAULT_SPEED;
     this._timestamp = null;
     this._objects = new ObjCollection();
 
     if (number >= 0) {
-      this._objects.add(new LevelNumber(canvas, config, number + 1, !this._restarts));
+      this._levelNumber = new LevelNumber(canvas, config, number + 1, !this._restarts);
+      this._objects.add(this._levelNumber);
     }
 
     for (let ix = 0; ix < config.walls.length; ix++) {
@@ -49,7 +53,12 @@ class Level {
 
   // -- public
 
-  hideMessages () {
+  onComplete (onCompleteCallback) {
+    this._onCompleteCallback = onCompleteCallback;
+  }
+
+  freeze () {
+    this._objects.destroyOne(this._levelNumber);
     this._objects.each((item) => {
       if (item.obj.constructor.name === 'Message') {
         item.obj.hide();
@@ -65,6 +74,12 @@ class Level {
     }
 
     let player = this._player;
+
+    if (!player.isDead && player.pos.x > this._config.maxX) {
+      this._onCompleteCallback();
+      return;
+    }
+
     for (var ix = 0; ix < this._objects._objects.length; ix++) {
       if (!this._objects._objects[ix].meta.collision) {
         continue;
@@ -82,6 +97,8 @@ class Level {
 
   destroy () {
     this._objects.destroyAll();
+
+    this._onCompleteCallback = null;
   }
 }
 

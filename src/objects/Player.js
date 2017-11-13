@@ -51,7 +51,6 @@ class Player {
     };
 
     this._onDieCallback = null;
-    this._onCompleteLevelCallback = null;
 
     this._health = 1;
 
@@ -73,10 +72,11 @@ class Player {
     this._pushDown = false;
     this._pushLock = false;
 
-    this._isDead = null;
-    this._isColliding = null;
-    this._isExploding = null;
+    this.isDead = false;
     this._deadTimestamp = null;
+    this._isColliding = false;
+    this._isExploding = false;
+    this._isExpanding = false;
 
     this._keydown = (event) => {
       if (event.which === 32) {
@@ -118,14 +118,14 @@ class Player {
   }
 
   _hold () {
-    if (!this._isHolding && !this._isDead) {
+    if (!this._isHolding && !this.isDead) {
       this._isHolding = true;
       this._holdingTimestamp = null;
     }
   }
 
   _release () {
-    if (this._isHolding && !this._isDead) {
+    if (this._isHolding && !this.isDead) {
       this._isHolding = false;
       this._isAccelerating = true;
       this._acceleratingTimestamp = null;
@@ -134,7 +134,7 @@ class Player {
   }
 
   _up () {
-    if (!this._isColliding && !this._isDead) {
+    if (!this._isColliding && !this.isDead) {
       this._pushUp = true;
       this._pushValid = false;
       this._pushLock = true;
@@ -142,7 +142,7 @@ class Player {
   }
 
   _down () {
-    if (!this._isColliding && !this._isDead) {
+    if (!this._isColliding && !this.isDead) {
       this._pushDown = true;
       this._pushValid = false;
       this._pushLock = true;
@@ -155,18 +155,14 @@ class Player {
     this._onDieCallback = onDieCallback;
   }
 
-  onCompleteLevel (onCompleteLevelCallback) {
-    this._onCompleteLevelCallback = onCompleteLevelCallback;
-  }
-
   // - state
 
   die () {
-    if (this._isDead) {
+    if (this.isDead) {
       return;
     }
     this._unbindKeys();
-    this._isDead = true;
+    this.isDead = true;
     this._isColliding = true;
     this._isHolding = false;
     this._isAccelerating = false;
@@ -177,8 +173,19 @@ class Player {
       return;
     }
     this._unbindKeys();
-    this._isDead = true;
+    this.isDead = true;
     this._isExploding = true;
+    this._isHolding = false;
+    this._isAccelerating = false;
+  }
+
+  expand () {
+    if (this._isExpanding) {
+      return;
+    }
+    this._unbindKeys();
+    this.isDead = true;
+    this._isExpanding = true;
     this._isHolding = false;
     this._isAccelerating = false;
   }
@@ -186,7 +193,7 @@ class Player {
   // -- AppObject API
 
   update (delta, timestamp) {
-    if (this._isDead) {
+    if (this.isDead) {
       this._deadTimestamp = this._deadTimestamp || timestamp;
     }
     if (this._isColliding && !this._isExploding) {
@@ -196,8 +203,6 @@ class Player {
       }
     } else if (this._isExploding) {
       this.pos.x = this.pos.x + SPEED_FACTOR * this._speed * delta * 0.2;
-    } else if (!this._isDead && this.pos.x > 1000) {
-      this._onCompleteLevelCallback();
     } else {
       // if (this._pushUp) {
       //   this._pushTimestsamp = timestamp;
@@ -283,10 +288,28 @@ class Player {
     let rgba;
     let shadowBlur;
     let shadowColor;
-    if (this._isExploding) {
-      let scaleUp = easeInCubic((timestamp - this._deadTimestamp) / EXPLODNG_MS);
-      let scaleDown = 1 - scaleUp;
-      red = Math.round(1 * scaleUp + 250);
+
+    let scaleUp = easeInCubic((timestamp - this._deadTimestamp) / EXPLODNG_MS);
+    let scaleDown = 1 - scaleUp;
+
+    if (this._isExpanding) {
+      red = Math.round(150 * scaleUp + 100);
+      green = 255;
+      blue = Math.round(150 * scaleUp + 100);
+      alpha = 0.5 + 0.5 * scaleDown;
+      shadowBlur = Math.round(10 + scaleUp * 100);
+      shadowColor = 'rgb(' + red + ',' + green + ',' + blue + ')';
+      ctx.shadowOffsetY = 0;
+      ctx.shadowOffsetX = 0;
+
+      rect[0] -= Math.round(scaleUp * rect[0]);
+      rect[1] -= Math.round(scaleUp * rect[1]);
+      rect[2] += Math.round(this.size.w * scaleUp * 25);
+      rect[3] += Math.round(this.size.h * scaleUp * 25);
+
+      shadowColor = 'hsl(40,50%,50%)';
+    } else if (this._isExploding) {
+      red = 255;
       green = Math.round(50 * scaleUp + 200);
       blue = Math.round(150 * scaleUp + 100);
       alpha = 0.5 + 0.5 * scaleDown;
@@ -302,8 +325,6 @@ class Player {
 
       shadowColor = 'hsl(40,50%,50%)';
     } else if (this._isColliding) {
-      let scaleUp = easeInCubic((timestamp - this._deadTimestamp) / COLLINDING_MS);
-      let scaleDown = 1 - scaleUp;
       red = Math.round(50 * scaleUp + 200);
       green = Math.round(150 * scaleDown + 50);
       blue = Math.round(100 * scaleUp);
@@ -380,7 +401,6 @@ class Player {
     this._canvas.destroyLayer(this._layer);
 
     this._onDieCallback = null;
-    this._onCompleteLevelCallback = null;
 
     document.removeEventListener('keydown', this._keydown);
     document.removeEventListener('keyup', this._keyup);

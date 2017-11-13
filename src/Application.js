@@ -282,6 +282,7 @@ class Application {
         const speed = this._speed * this._config.state.play.speed;
         game = new Game(this._canvas, speed, this._config.state.play, this._debug);
         game.onGameOver(handleGameOver);
+        game.onComplete(handleGameOver);
         this._game = game;
         this._objects.add(game);
       } else {
@@ -318,7 +319,7 @@ class Application {
     const canEnterState = oldState => true;
 
     const enterState = () => {
-      gameOver = new GameOver(this._canvas);
+      gameOver = new GameOver(this._canvas, this._game, this._config.state.gameOver);
       this._objects.add(gameOver);
 
       keyup = (event) => {
@@ -336,8 +337,8 @@ class Application {
     const leaveState = (newState) => {
       window.clearTimeout(autoTransition);
       document.removeEventListener('keyup', keyup);
-      this._objects.destroyOne(this._game);
       this._objects.destroyOne(gameOver);
+      this._objects.destroyOne(this._game);
       this._game = null;
     };
 

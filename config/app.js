@@ -21,7 +21,7 @@ var CONFIG = {
     intro: {},
     splash: {},
     demo: {
-      speed: 7,
+      speed: 5.5,
       levels: level1.tiles
     },
     play: {
