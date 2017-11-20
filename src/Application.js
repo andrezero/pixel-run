@@ -19,7 +19,7 @@ import { Credits } from './states/Credits.js';
 const SPEED = 1;
 const RESET_SEC = 0.1;
 const INTRO_SEC = 0.5;
-const SPLASH_SEC = 4;
+const SPLASH_SEC = 5;
 const DEMO_SEC = 5;
 const GAME_OVER_SEC = 1;
 const CREDITS_SEC = 10;

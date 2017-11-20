@@ -35,9 +35,9 @@ class Demo {
   _delay () {
     window.clearTimeout(this._timeoutId);
     this._timeoutId = window.setTimeout(() => {
-      this._objects.add(new Message(this._canvas, { y: this._canvas.max.y * 0.025, text: '<X> exit' }));
+      this._objects.add(new Message(this._canvas, { y: this._canvas.max.y * 0.05, text: '<X> exit' }));
       this._timeoutId = window.setTimeout(() => {
-        this._objects.add(new Message(this._canvas, { y: this._canvas.max.y * 0.95, text: 'press <SPACE> to start' }));
+        this._objects.add(new Message(this._canvas, { y: this._canvas.max.y * 0.92, text: 'press <SPACE> to start' }));
       }, 2500);
     }, 500);
   }
