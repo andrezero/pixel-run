@@ -23,6 +23,8 @@ class Intro {
     this._auxLayer = canvas.newVirtualLayer('intro-aux');
     this._auxCtx = this._auxLayer.ctx;
 
+    this._textLayer = canvas.newLayer('intro-text', null, null, this._config.zIndex);
+
     this._columns = COLUMNS;
     this._size = Math.round(1000 / this._columns);
 
@@ -38,7 +40,7 @@ class Intro {
     window.clearTimeout(this._timeoutId);
     this._timeoutId = window.setTimeout(() => {
       this._slowDown = true;
-      this._objects.add(new Message(this._canvas, { y: this._canvas.max.y * 0.60, size: 15, text: '(c) 2017 andrezero' }));
+      this._objects.add(new Message(this._textLayer, { y: this._canvas.max.y * 0.60, size: 15, text: '(c) 2017 andrezero' }));
     }, 500);
   }
 
@@ -65,11 +67,11 @@ class Intro {
 
     this._auxCtx.clearRect(0, 0, width, height);
     this._auxCtx.globalAlpha = FADE;
-    this._auxCtx.drawImage(this._layer.element, 0, 0);
+    this._auxCtx.drawImage(this._layer._element, 0, 0);
 
     // ctx.clearRect(0, 0, width, height);
     ctx.globalCompositeOperation = 'copy';
-    ctx.drawImage(this._auxLayer.element, 0, 0);
+    ctx.drawImage(this._auxLayer._element, 0, 0);
 
     ctx.globalCompositeOperation = 'source-over';
     ctx.fillStyle = 'rgba(80, 200, 80, ' + (this._slowDown ? '0.3' : '1') + ')';
@@ -97,8 +99,9 @@ class Intro {
   }
 
   destroy () {
-    this._canvas.destroyLayer(this._layer);
-    this._canvas.destroyLayer(this._auxLayer);
+    this._layer.destroy();
+    this._auxLayer.destroy();
+    this._textLayer.destroy();
 
     window.clearTimeout(this._timeoutId);
   }

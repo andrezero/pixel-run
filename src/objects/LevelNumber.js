@@ -8,12 +8,12 @@ const FONT_SIZE = 40;
 const MIN_FONT_PIXELS = 20;
 
 class LevelNumber {
-  constructor (canvas, config, number) {
+  constructor (canvas, number, config) {
     this._canvas = canvas;
     this._config = config;
     this._number = number;
 
-    this._layer = canvas.newLayer('level-num');
+    this._layer = canvas.newLayer('level-num', null, null, this._config.zIndex);
     this._ctx = this._layer.ctx;
 
     this._maxFontSize = null;
@@ -68,7 +68,7 @@ class LevelNumber {
   }
 
   destroy () {
-    this._canvas.destroyLayer(this._layer);
+    this._layer.destroy();
 
     window.clearTimeout(this._timeoutId);
   }

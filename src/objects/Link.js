@@ -8,7 +8,7 @@ const DEFAULT_SIZE = 20;
 const MIN_FONT_PIXELS = 9;
 const DEFAULT_COLOR = 'rgb(230, 230, 230)';
 
-class Message {
+class Link {
   constructor (layer, config) {
     this._layer = layer;
     this._canvas = layer._canvas;
@@ -34,6 +34,12 @@ class Message {
     this._hidden = false;
     this._requireRender = false;
 
+    this._tap = (event) => {
+      console.log('TAP');
+    };
+
+    this._tapBinding = this._canvas.bindEvent('tap', this._tap);
+
     this.resize();
   }
 
@@ -41,14 +47,8 @@ class Message {
 
   // -- api
 
-  hide () {
-    this._hidden = true;
-    this._requireRender = true;
-  }
-
-  setText (text) {
-    this._text = text;
-    this.resize();
+  onClick (onClickCallback) {
+    this._onClickCallback = onClickCallback;
   }
 
   // -- AppObject API
@@ -60,12 +60,8 @@ class Message {
     this._requireRender = false;
     const ctx = this._ctx;
 
-    ctx.font = this._fontSize + 'px pixel';
-    ctx.textAlign = this._config.align;
-    ctx.textBaseline = this._config.baseline;
-
-    const pos = this._canvas.scalePoint(this._pos);
-    const dim = this._ctx.measureText(this._text);
+    const pos = this._scaledPos;
+    const dim = this._dim;
 
     let x = pos.x;
     const y = pos.y - PADDING;
@@ -81,10 +77,11 @@ class Message {
 
     const rect = [x, y, width, height];
 
+    this._tapBinding.rect = rect;
+
     ctx.clearRect(...rect);
 
     if (!this._hidden) {
-      console.log(this._bgColor);
       ctx.fillStyle = this._bgColor;
       ctx.fillRect(...rect);
       ctx.fillStyle = this._config.color;
@@ -99,14 +96,25 @@ class Message {
       y: this._config.y
     };
 
+    const ctx = this._ctx;
+
+    ctx.font = this._fontSize + 'px pixel';
+    ctx.textAlign = this._config.align;
+    ctx.textBaseline = this._config.baseline;
+
+    this._scaledPos = this._canvas.scalePoint(this._pos);
+    this._dim = this._ctx.measureText(this._text);
+
     this._requireRender = true;
   }
 
   destroy () {
     this._layer.destroy();
+
+    this._tapBinding.unbind();
   }
 }
 
 export {
-  Message
+  Link
 };

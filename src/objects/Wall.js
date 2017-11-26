@@ -7,11 +7,12 @@ const DEFAULT_SPEED = 1;
 const WIDTH = 10;
 
 class Wall {
-  constructor (canvas, speed, config) {
+  constructor (canvas, layer, speed, config) {
     this._canvas = canvas;
+    this._layer = layer;
     this._config = config;
 
-    this._ctx = canvas.ctx;
+    this._ctx = this._layer.ctx;
 
     this._objects = new ObjCollection();
 

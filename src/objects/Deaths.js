@@ -14,7 +14,7 @@ class Deaths {
     this._config = config;
     this._number = number;
 
-    this._layer = canvas.newLayer('deaths');
+    this._layer = canvas.newLayer('deaths', null, null, this._config.zIndex);
     this._ctx = this._layer.ctx;
 
     this._maxFontSize = null;
@@ -82,7 +82,7 @@ class Deaths {
   }
 
   destroy () {
-    this._canvas.destroyLayer(this._layer);
+    this._layer.destroy();
   }
 }
 

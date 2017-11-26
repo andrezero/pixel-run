@@ -14,6 +14,8 @@ class Instructions {
     this._layer = canvas.newLayer('instructions');
     this._ctx = this._layer.ctx;
 
+    this._textLayer = canvas.newLayer('instructions-text', null, null, this._config.zIndex);
+
     const stateTranstions = {
       'intro': null,
       'space': null,
@@ -32,9 +34,14 @@ class Instructions {
     this._slowDown = false;
     window.clearTimeout(this._timeoutId);
     this._timeoutId = window.setTimeout(() => {
-      this._objects.add(new Header(this._canvas, { y: this._canvas.max.y * 0.15, size: 90, text: 'instructions' }));
-      this._objects.add(new Message(this._canvas, { y: this._canvas.max.y * 0.05, text: '<X> exit' }));
-      this._objects.add(new Message(this._canvas, { y: this._canvas.max.y * 0.92, size: 20, text: 'press <SPACE> to start' }));
+      this._objects.add(new Header(this._layer, { y: this._canvas.max.y * 0.15, size: 90, text: 'instructions' }));
+      this._objects.add(new Message(this._textLayer, { y: this._canvas.max.y * 0.05, text: '<X> exit' }));
+      this._objects.add(new Message(this._textLayer, { y: this._canvas.max.y * 0.40, text: 'complete all levels before time runs out' }));
+      this._objects.add(new Message(this._textLayer, { y: this._canvas.max.y * 0.45, text: 'try not to collide with walls and obstacles' }));
+      this._objects.add(new Message(this._textLayer, { y: this._canvas.max.y * 0.50, text: 'press <SPACE> to slow down' }));
+      this._objects.add(new Message(this._textLayer, { y: this._canvas.max.y * 0.55, text: 'slowing down for too long will kill you' }));
+      this._objects.add(new Message(this._textLayer, { y: this._canvas.max.y * 0.60, text: 'slow down early to recover speed sooner' }));
+      this._objects.add(new Message(this._textLayer, { y: this._canvas.max.y * 0.92, size: 20, text: 'press <SPACE> to start' }));
       this._slowDown = true;
     }, 500);
   }
@@ -50,7 +57,8 @@ class Instructions {
   }
 
   destroy () {
-    this._canvas.destroyLayer(this._layer);
+    this._layer.destroy();
+    this._textLayer.destroy();
 
     window.clearTimeout(this._timeoutId);
   }

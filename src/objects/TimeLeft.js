@@ -17,17 +17,17 @@ function padLeft (number) {
 }
 
 class TimeLeft {
-  constructor (canvas, config, time) {
+  constructor (canvas, time, config) {
     this._canvas = canvas;
     this._config = config;
     this._time = time;
 
-    this._layer = canvas.newLayer('time-left');
+    this._layer = canvas.newLayer('time-left', null, null, this._config.zIndex);
     this._ctx = this._layer.ctx;
 
     this._objects = new ObjCollection();
 
-    this._timeBar = new TimeBar(this._canvas, null, this._time);
+    this._timeBar = new TimeBar(this._canvas, this._time, { zIndex: this._config.zIndex });
     this._objects.add(this._timeBar);
 
     this._onTimeCallback = null;
@@ -128,7 +128,7 @@ class TimeLeft {
   }
 
   destroy () {
-    this._canvas.destroyLayer(this._layer);
+    this._layer.destroy();
 
     this._onTimeCallback = null;
   }

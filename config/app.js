@@ -24,14 +24,22 @@ var CONFIG = {
       speed: 5.5,
       levels: level1.tiles
     },
+    instructions: {},
     play: {
-      time: 213,
+      time: 5, // 213,
+      zIndex: {
+        hud: 10,
+        player: 5,
+        level: 3
+      },
       speed: 1.2,
       startLevel: 0,
-      levels: level1.tiles
+      levels: [level1.tiles[6]]
     },
     pause: {},
-    gameOver: {},
+    gameOver: {
+      zIndex: 8
+    },
     scores: {},
     about: {
       feedback: 'https://andrezero.typeform.com/to/rTl0RU'

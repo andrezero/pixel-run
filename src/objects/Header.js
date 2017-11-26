@@ -6,8 +6,9 @@ import { sin, PI_3Q } from '../../lib/Maths';
 const DEFAULT_SIZE = 90;
 
 class Header {
-  constructor (canvas, config) {
-    this._canvas = canvas;
+  constructor (layer, config) {
+    this._layer = layer;
+    this._canvas = layer._canvas;
     this._config = config;
 
     this._config.y = this._config.y || this._canvas.center.y;
@@ -15,15 +16,14 @@ class Header {
 
     this._text = config.text;
 
-    this._layer = canvas.newLayer('player');
+    // this._layer = layer._canvas.newLayer('header', null, null, this._config.zIndex);
     this._ctx = this._layer.ctx;
 
     this._fontSize = null;
     this._pos = null;
     this._scaledPos = null;
-    this._dim = null;
 
-    this._skip = 10;
+    this._skip = 3;
     this._skipped = 0;
     this._iteration = 0;
 
@@ -53,11 +53,17 @@ class Header {
     if (this._slowDown && this._skipped++ < this._skip) {
       return;
     }
+
+    ctx.font = this._fontSize + 'px pixel';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
     this._skipped = 0;
     this._iteration += this._slowDown ? 5 : 55;
 
     const iteration = this._iteration;
-    const pos = this._scaledPos;
+
+    const pos = this._canvas.scalePoint(this._pos);
     const slowDown = this._slowDown;
 
     let x = canvas.scaleValue(Math.cos(iteration * (slowDown ? 5 : 50)) * 5) + pos.x;
@@ -80,19 +86,10 @@ class Header {
       x: this._canvas.center.x,
       y: this._config.y
     };
-
-    const ctx = this._ctx;
-
-    ctx.font = this._fontSize + 'px pixel';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-
-    this._scaledPos = this._canvas.scalePoint(this._pos);
-    this._dim = this._ctx.measureText(this._text);
   }
 
   destroy () {
-    this._canvas.destroyLayer(this._layer);
+    this._layer.destroy();
 
     window.clearTimeout(this._timeoutId);
   }

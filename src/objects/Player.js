@@ -25,7 +25,7 @@ class Player {
     this._canvas = canvas;
     this._config = config;
 
-    this._layer = canvas.newLayer('player');
+    this._layer = canvas.newLayer('player', null, null, this._config.zIndex);
     this._ctx = this._layer.ctx;
 
     this._objects = new ObjCollection();
@@ -398,7 +398,7 @@ class Player {
   }
 
   destroy () {
-    this._canvas.destroyLayer(this._layer);
+    this._layer.destroy();
 
     this._onDieCallback = null;
 

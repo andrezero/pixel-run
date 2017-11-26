@@ -3,6 +3,7 @@
 import { ObjCollection } from '../../lib/ObjCollection';
 
 import { Level } from '../objects/Level';
+import { LevelNumber } from '../objects/LevelNumber';
 import { Player } from '../objects/Player';
 import { Deaths } from '../objects/Deaths';
 import { TimeLeft } from '../objects/TimeLeft';
@@ -15,13 +16,11 @@ class Game {
     this._canvas = canvas;
     this._config = config;
 
-    this._ctx = canvas.ctx;
-
     this._speed = speed || DEFAULT_SPEED;
 
     this._objects = new ObjCollection();
 
-    this._timeLeft = new TimeLeft(this._canvas, null, config.time);
+    this._timeLeft = new TimeLeft(this._canvas, config.time, { zIndex: this._config.zIndex.hud });
     this._objects.add(this._timeLeft);
     this._timeLeft.onTime(() => {
       this._objects.destroyOne(this._timeLeft);
@@ -36,7 +35,7 @@ class Game {
     this._state = null;
     this._deaths = 0;
     this._restarts = 0;
-    this._levelNum = config.startLevel || 0;
+    this._levelIx = config.startLevel || 0;
     this._isComplete = false;
 
     this._startLevel();
@@ -70,6 +69,7 @@ class Game {
 
   _destroyLevel () {
     this._objects.destroyOne(this._level);
+    this._objects.destroyOne(this._levelNumber);
     this._objects.destroyOne(this._player);
     this._level = null;
     this._player = null;
@@ -82,16 +82,18 @@ class Game {
   }
 
   _startLevel () {
-    const levelConfig = this._levels[this._levelNum];
+    this._levelNumber = new LevelNumber(this._canvas, this._levelIx + 1, { zIndex: this._config.zIndex.hud });
+    this._objects.add(this._levelNumber);
+    const levelConfig = Object.assign({}, this._levels[this._levelIx], { zIndex: this._config.zIndex.level });
     const speed = levelConfig.speed * this._speed; ;
-    const player = levelConfig.player;
-    this._player = new Player(this._canvas, speed, player);
+    const playerConfig = Object.assign({}, levelConfig.player, { zIndex: this._config.zIndex.player });
+    this._player = new Player(this._canvas, speed, playerConfig);
     this._objects.add(this._player, 1);
-    this._level = new Level(this._canvas, this._levelNum, this._restarts, this._player, speed, levelConfig);
+    this._level = new Level(this._canvas, this._levelIx, this._restarts, this._player, speed, levelConfig);
     this._objects.add(this._level, 0);
     this._player.onDie(() => {
       if (!this._deaths) {
-        this._deathsDisplay = new Deaths(this._canvas);
+        this._deathsDisplay = new Deaths(this._canvas, { zIndex: this._config.zIndex.hud });
         this._objects.add(this._deathsDisplay, 0);
       }
       this._deaths++;
@@ -101,9 +103,9 @@ class Game {
     });
     this._level.onComplete(() => {
       this._restarts = 0;
-      if (this._levelNum + 1 < this._levels.length) {
+      if (this._levelIx + 1 < this._levels.length) {
         this._destroyLevel();
-        this._levelNum++;
+        this._levelIx++;
         this._startLevel();
       } else {
         this._timeLeft.stop();
@@ -128,7 +130,7 @@ class Game {
     return {
       complete: this._isComplete,
       time: this._timeLeft.getTime(),
-      level: this._levelNum,
+      level: this._levelIx,
       deaths: this._deaths
     };
   }

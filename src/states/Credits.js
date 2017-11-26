@@ -7,7 +7,8 @@ class Credits {
     this._canvas = canvas;
     this._config = config;
 
-    this._ctx = canvas.ctx;
+    this._layer = canvas.newLayer('credits');
+    this._ctx = this._layer.ctx;
 
     var stateTranstions = {};
 
@@ -27,6 +28,10 @@ class Credits {
   }
 
   render (delta, timestamp) {
+  }
+
+  destroy () {
+    this._layer.destroy();
   }
 }
 

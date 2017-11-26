@@ -7,13 +7,13 @@ const WIDTH = 200;
 const HEIGHT = 20;
 
 class TimeBar {
-  constructor (canvas, config, max) {
+  constructor (canvas, max, config) {
     this._canvas = canvas;
     this._config = config;
     this._max = max;
     this._value = max;
 
-    this._layer = canvas.newLayer('time-bar');
+    this._layer = canvas.newLayer('time-bar', null, null, this._config.zIndex);
     this._ctx = this._layer.ctx;
 
     this._requireRender = true;
@@ -61,7 +61,7 @@ class TimeBar {
   }
 
   destroy () {
-    this._canvas.destroyLayer(this._layer);
+    this._layer.destroy();
   }
 }
 

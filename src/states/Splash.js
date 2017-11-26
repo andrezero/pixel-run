@@ -14,6 +14,8 @@ class Splash {
     this._layer = canvas.newLayer('splash');
     this._ctx = this._layer.ctx;
 
+    this._textLayer = canvas.newLayer('splash-text', null, null, this._config.zIndex);
+
     this._fontSize = null;
     this._center = null;
 
@@ -24,9 +26,9 @@ class Splash {
 
   _delay () {
     this._timeoutId = window.setTimeout(() => {
-      this._objects.add(new Header(this._canvas, { y: this._canvas.center.y, size: 150, text: 'pixel-run' }));
-      this._objects.add(new Message(this._canvas, { y: this._canvas.max.y * 0.90, size: 30, text: 'press <SPACE> to start' }));
-      this._objects.add(new Menu(this._canvas, ['<I> instructions', '<H> high scores', '<A> about']));
+      this._objects.add(new Header(this._layer, { y: this._canvas.center.y, size: 150, text: 'pixel-run' }));
+      this._objects.add(new Message(this._textLayer, { y: this._canvas.max.y * 0.90, size: 30, text: 'press <SPACE> to start' }));
+      this._objects.add(new Menu(this._textLayer, ['<I> instructions', '<H> high scores', '<A> about']));
     }, 500);
   }
 
@@ -37,7 +39,8 @@ class Splash {
   }
 
   destroy () {
-    this._canvas.destroyLayer(this._layer);
+    this._layer.destroy();
+    this._textLayer.destroy();
 
     window.clearTimeout(this._timeoutId);
   }

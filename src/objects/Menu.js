@@ -8,10 +8,11 @@ const FONT_SIZE = 25;
 const MIN_FONT_PIXELS = 9;
 
 class Menu {
-  constructor (canvas, options) {
-    this._canvas = canvas;
+  constructor (layer, options) {
+    this._layer = layer;
+    this._canvas = layer._canvas;
 
-    this._layer = canvas.newLayer('player');
+    this._layer = layer._canvas.newLayer('menu');
     this._ctx = this._layer.ctx;
 
     this._fontSize = null;
@@ -81,13 +82,12 @@ class Menu {
     ctx.font = this._fontSize + 'px pixel';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
 
     this._dim = this._ctx.measureText(this._text);
   }
 
   destroy () {
-    this._canvas.destroyLayer(this._layer);
+    this._layer.destroy();
   }
 }
 

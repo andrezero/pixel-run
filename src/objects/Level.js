@@ -1,6 +1,7 @@
 'use strict';
 
 import { ObjCollection } from '../../lib/ObjCollection';
+import { collision } from '../../lib/Maths';
 
 import { Drop } from './Drop';
 import { LevelNumber } from './LevelNumber';
@@ -12,6 +13,12 @@ const DEFAULT_SPEED = 1;
 class Level {
   constructor (canvas, number, restarts, player, speed, config) {
     this._canvas = canvas;
+    this._config = config;
+
+    this._layers = {
+      walls: canvas.newLayer('walls', null, null, this._config.zIndex),
+      messages: canvas.newLayer('messages', null, null, this._config.zIndex)
+    };
 
     this._restarts = restarts;
     this._player = player;
@@ -22,21 +29,14 @@ class Level {
     config.maxX = config.maxX || 1000;
     this._config = config;
 
-    this._ctx = canvas.ctx;
-
     this._onCompleteCallback = null;
 
     this._speed = speed || DEFAULT_SPEED;
     this._timestamp = null;
     this._objects = new ObjCollection();
 
-    if (number >= 0) {
-      this._levelNumber = new LevelNumber(canvas, config, number + 1, !this._restarts);
-      this._objects.add(this._levelNumber);
-    }
-
     for (let ix = 0; ix < config.walls.length; ix++) {
-      let wall = new Wall(canvas, this._speed, config.walls[ix]);
+      let wall = new Wall(canvas, this._layers.walls, this._speed, config.walls[ix]);
       this._objects.add(wall, null, {collision: true});
     }
 
@@ -45,7 +45,7 @@ class Level {
       msg.y = this._canvas.max.y * 0.95;
       msg.size = 20;
       if (!msg.restarts || this._restarts >= msg.restarts) {
-        let message = new Message(this._canvas, msg);
+        let message = new Message(this._layers.messages, msg);
         this._objects.add(message);
       }
     }
@@ -58,7 +58,6 @@ class Level {
   }
 
   freeze () {
-    this._objects.destroyOne(this._levelNumber);
     this._objects.each((item) => {
       if (item.obj.constructor.name === 'Message') {
         item.obj.hide();
@@ -85,18 +84,24 @@ class Level {
         continue;
       }
       let object = this._objects._objects[ix].obj;
-      var collisionLeft = player.pos.x + player.size.w > object.pos.x;
-      var collisionRight = player.pos.x < object.pos.x + object.size.w;
-      var collisionTop = player.pos.y + player.size.h > object.pos.y;
-      var collisionBottom = player.pos.y < object.pos.y + object.size.h;
-      if (collisionLeft && collisionRight && collisionTop && collisionBottom) {
+      let rect1 = [player.pos.x, player.pos.y, player.size.w, player.size.h];
+      let rect2 = [object.pos.x, object.pos.y, object.size.w, object.size.h];
+      if (collision(rect1, rect2)) {
         player.die();
       }
     }
   }
 
+  render () {
+    this._layers.walls.clear();
+  }
+
   destroy () {
     this._objects.destroyAll();
+
+    for (let key in this._layers) {
+      this._layers[key].destroy();
+    }
 
     this._onCompleteCallback = null;
   }

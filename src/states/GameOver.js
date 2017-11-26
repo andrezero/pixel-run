@@ -22,7 +22,6 @@ function padScore (num1, num2, length, sign) {
     ret = num1 + ' ' + dots + ' ' + sign + num2;
     dots += '.';
   } while (ret.length < length);
-  console.log(ret, ret.length);
   return ret;
 }
 
@@ -32,8 +31,10 @@ class GameOver {
     this._game = game;
     this._config = config;
 
-    this._layer = canvas.newLayer('game-over');
+    this._layer = canvas.newLayer('game-over', null, null, this._config.zIndex);
     this._ctx = this._layer.ctx;
+
+    this._textLayer = canvas.newLayer('game-over-text', null, null, this._config.zIndex);
 
     const stateTranstions = {
       'intro': null,
@@ -62,11 +63,11 @@ class GameOver {
     this._timeoutId = window.setTimeout(() => {
       const score = this._game.getScore();
       const text = score.complete ? 'congratulations' : 'game over';
-      this._objects.add(new Header(this._canvas, { y: this._canvas.max.y * 0.15, size: 90, text: text }));
+      this._objects.add(new Header(this._layer, { y: this._canvas.max.y * 0.15, size: 90, text: text }));
       this._render = 1;
       this._timeoutId = window.setTimeout(() => {
-        this._objects.add(new Message(this._canvas, { y: this._canvas.max.y * 0.05, text: '<X> exit' }));
-        this._objects.add(new Message(this._canvas, { y: this._canvas.max.y * 0.92, size: 20, text: 'press <SPACE> to restart' }));
+        this._objects.add(new Message(this._textLayer, { y: this._canvas.max.y * 0.05, text: '<X> exit' }));
+        this._objects.add(new Message(this._textLayer, { y: this._canvas.max.y * 0.92, size: 20, text: 'press <SPACE> to restart' }));
       }, 250);
     }, 750);
   }
@@ -74,13 +75,16 @@ class GameOver {
   // -- AppObject API
 
   render (delta, timestamp) {
-    const ctx = this._canvas.ctx;
+    const ctx = this._ctx;
     const score = this._game.getScore();
 
     this._fadeTimestamp = this._fadeTimestamp || timestamp;
-    const alpha = ramp((timestamp - this._fadeTimestamp) / FADE_MS, 0, 0.8, easeInCubic);
-    ctx.fillStyle = score.complete ? 'rgba(50,120,20,' + alpha + ')' : 'rgba(120,50,20,' + alpha + ')';
-    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    if (timestamp - this._fadeTimestamp < FADE_MS) {
+      const alpha = ramp((timestamp - this._fadeTimestamp) / FADE_MS, 0, 0.8, easeInCubic);
+      this._layer.clear();
+      ctx.fillStyle = score.complete ? 'rgba(50,120,20,' + alpha + ')' : 'rgba(120,50,20,' + alpha + ')';
+      ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
 
     if (this._render) {
       this._stepTimestamp = this._stepTimestamp || timestamp;
@@ -89,7 +93,6 @@ class GameOver {
       const size = 50;
       const align = 'center';
       const baseline = 'top';
-      console.log(score);
       let time = score.time;
       let level = score.level;
       let deaths = score.deaths;
@@ -97,7 +100,7 @@ class GameOver {
       if (this._render === 1) {
         time = Math.min(score.time, time * scaleUp);
         if (!this._time) {
-          this._time = new Message(this._canvas, { x, size, align, baseline, color: 'green', y: this._canvas.max.y * 0.3 });
+          this._time = new Message(this._textLayer, { x, size, align, baseline, color: 'green', y: this._canvas.max.y * 0.3 });
           this._objects.add(this._time);
         }
         this._time.setText('T' + padScore(Math.ceil(time), Math.ceil(time * 2000), 13, '+'));
@@ -105,7 +108,7 @@ class GameOver {
       if (this._render === 2) {
         level = Math.min(score.level, level * scaleUp);
         if (!this._level) {
-          this._level = new Message(this._canvas, { x, size, align, baseline, color: 'orange', y: this._canvas.max.y * 0.4 });
+          this._level = new Message(this._textLayer, { x, size, align, baseline, color: 'orange', y: this._canvas.max.y * 0.4 });
           this._objects.add(this._level);
         }
         this._level.setText('L' + padScore(Math.ceil(level), Math.ceil(level * 1000), 13, '+'));
@@ -113,16 +116,15 @@ class GameOver {
       if (this._render === 3) {
         deaths = Math.min(score.deaths, deaths * scaleUp);
         if (!this._deaths) {
-          this._deaths = new Message(this._canvas, { x, size, align, baseline, color: 'red', y: this._canvas.max.y * 0.5 });
+          this._deaths = new Message(this._textLayer, { x, size, align, baseline, color: 'red', y: this._canvas.max.y * 0.5 });
           this._objects.add(this._deaths);
         }
         this._deaths.setText('x' + padScore(Math.ceil(deaths), Math.ceil(deaths * 250), 13, '-'));
       }
       if (this._render === 4) {
-        console.log(total, scaleUp, Math.ceil(total * scaleUp));
         total = Math.min(total, Math.ceil(total * scaleUp));
         if (!this._total) {
-          this._total = new Message(this._canvas, { x, size: size * 1.5, baseline, color: 'white', y: this._canvas.max.y * 0.65 });
+          this._total = new Message(this._textLayer, { x, size: size * 1.5, baseline, color: 'white', y: this._canvas.max.y * 0.65 });
           this._objects.add(this._total);
         }
         this._total.setText(' > ' + total + ' < ');
@@ -142,7 +144,8 @@ class GameOver {
   }
 
   destroy () {
-    this._canvas.destroyLayer(this._layer);
+    this._layer.destroy();
+    this._textLayer.destroy();
 
     window.clearTimeout(this._timeoutId);
   }

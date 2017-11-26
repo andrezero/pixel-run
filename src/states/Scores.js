@@ -51,7 +51,7 @@ class Scores {
   }
 
   destroy () {
-    this._canvas.destroyLayer(this._layer);
+    this._layer.destroy();
 
     window.clearTimeout(this._timeoutId);
   }

@@ -118,7 +118,7 @@ class Application {
     const enterState = () => {
       this._objects.destroyAll();
 
-      if (this._config.debug) {
+      if (this._debug) {
         this.showFps();
       }
 
@@ -146,7 +146,7 @@ class Application {
     const canEnterState = oldState => true;
 
     const enterState = () => {
-      this._intro = new Intro(this._canvas, this._config.state.intro, this._debug);
+      this._intro = new Intro(this._canvas, this._config.state.intro);
       this._objects.add(this._intro);
 
       autoTransition = window.setTimeout(() => {
@@ -170,10 +170,10 @@ class Application {
 
     const enterState = () => {
       if (!this._intro) {
-        this._intro = new Intro(this._canvas, this._config.state.intro, this._debug);
+        this._intro = new Intro(this._canvas, this._config.state.intro);
         this._objects.add(this._intro);
       }
-      splash = new Splash(this._canvas, this._config.state.splash, this._debug);
+      splash = new Splash(this._canvas, this._config.state.splash);
       this._objects.add(splash);
 
       keyup = (event) => {
@@ -247,7 +247,7 @@ class Application {
     const canEnterState = oldState => true;
 
     const enterState = () => {
-      instructions = new Instructions(this._canvas, this._config.state.instructions, this._debug);
+      instructions = new Instructions(this._canvas, this._config.state.instructions);
       this._objects.add(instructions);
 
       keyup = (event) => {
@@ -280,7 +280,7 @@ class Application {
     const enterState = () => {
       if (!this._game) {
         const speed = this._speed * this._config.state.play.speed;
-        game = new Game(this._canvas, speed, this._config.state.play, this._debug);
+        game = new Game(this._canvas, speed, this._config.state.play);
         game.onGameOver(handleGameOver);
         game.onComplete(handleGameOver);
         this._game = game;
@@ -353,7 +353,7 @@ class Application {
     const canEnterState = oldState => true;
 
     const enterState = () => {
-      scores = new Scores(this._canvas, this._config.state.scores, this._debug);
+      scores = new Scores(this._canvas, this._config.state.scores);
       this._objects.add(scores);
 
       keyup = (event) => {
@@ -382,7 +382,7 @@ class Application {
     const canEnterState = oldState => true;
 
     const enterState = () => {
-      about = new About(this._canvas, this._config.state.about, this._debug);
+      about = new About(this._canvas, this._config.state.about);
       this._objects.add(about);
 
       keyup = (event) => {
@@ -410,7 +410,7 @@ class Application {
     const canEnterState = oldState => this._lastGame.isCompleted();
 
     const enterState = () => {
-      credits = new Credits(this._canvas, this._config.state.credits, this._debug);
+      credits = new Credits(this._canvas, this._config.state.credits);
       this._objects.add(credits);
 
       autoTransition = window.setTimeout(() => {
