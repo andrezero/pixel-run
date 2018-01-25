@@ -3,12 +3,10 @@
 import { ObjCollection } from '../../lib/ObjCollection';
 
 class Credits {
-  constructor (canvas, config) {
-    this._canvas = canvas;
-    this._config = config;
-
-    this._layer = canvas.newLayer('credits');
+  constructor (layer, config) {
+    this._layer = layer.newLayer('credits');
     this._ctx = this._layer.ctx;
+    this._config = config;
 
     var stateTranstions = {};
 

@@ -21,12 +21,10 @@ const COLLINDING_MS = 500;
 const EXPLODNG_MS = 750;
 
 class Player {
-  constructor (canvas, speed, config) {
-    this._canvas = canvas;
-    this._config = config;
-
-    this._layer = canvas.newLayer('player', null, null, this._config.zIndex);
+  constructor (layer, speed, config) {
+    this._layer = layer.newLayer('player', null, null, config.zIndex);
     this._ctx = this._layer.ctx;
+    this._config = config;
 
     this._objects = new ObjCollection();
 
@@ -47,7 +45,7 @@ class Player {
     };
     this.pos = {
       x: SIZE / -2,
-      y: canvas.center.y - SIZE / 2
+      y: layer.center.y - SIZE / 2
     };
 
     this._onDieCallback = null;
@@ -364,12 +362,12 @@ class Player {
 
     rgba = 'rgba(' + red + ',' + green + ',' + blue + ',' + alpha + ')';
 
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.clearRect(0, 0, this._layer.size.w, this._layer.size.h);
 
     ctx.shadowBlur = shadowBlur;
     ctx.shadowColor = shadowColor;
     ctx.fillStyle = rgba;
-    ctx.fillRect(...this._canvas.scaleArray(rect));
+    ctx.fillRect(...this._layer.scaleArray(rect));
 
     let showTriangle = this._energy && Math.abs(this._wave) > PUSH_AVAILABLE_WAVE_THRESHOLD;
     showTriangle = showTriangle || timestamp - this._pushTimestsamp < PUSH_MS;
@@ -386,7 +384,7 @@ class Player {
       triangle.push({ x: center.x, y: center.y - this.size.h / 3 * direction });
       triangle.push({ x: center.x + this.size.w / 3, y: center.y + this.size.h / 3 * direction });
 
-      const path = this._canvas.scalePath(triangle);
+      const path = this._layer.scalePath(triangle);
 
       ctx.fillStyle = 'rgba(0,0,0,0.5)';
       ctx.beginPath();

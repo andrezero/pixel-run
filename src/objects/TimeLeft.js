@@ -17,17 +17,15 @@ function padLeft (number) {
 }
 
 class TimeLeft {
-  constructor (canvas, time, config) {
-    this._canvas = canvas;
+  constructor (layer, time, config) {
+    this._layer = layer.newLayer('time-left', null, null, config.zIndex);
+    this._ctx = this._layer.ctx;
     this._config = config;
     this._time = time;
 
-    this._layer = canvas.newLayer('time-left', null, null, this._config.zIndex);
-    this._ctx = this._layer.ctx;
-
     this._objects = new ObjCollection();
 
-    this._timeBar = new TimeBar(this._canvas, this._time, { zIndex: this._config.zIndex });
+    this._timeBar = new TimeBar(this._layer, this._time, { zIndex: this._config.zIndex });
     this._objects.add(this._timeBar);
 
     this._onTimeCallback = null;
@@ -94,8 +92,8 @@ class TimeLeft {
 
     const dim = this._dim;
 
-    const x = this._canvas.scaleValue(this._canvas.center.x - dim.width / 2) - PADDING * 2;
-    const y = this._canvas.scaleValue(45);
+    const x = this._layer.scaleValue(this._layer.center.x - dim.width / 2) - PADDING * 2;
+    const y = this._layer.scaleValue(45);
 
     const width = dim.width + PADDING * 3;
     const height = this._fontSize + PADDING;
@@ -115,8 +113,8 @@ class TimeLeft {
   }
 
   resize () {
-    this._fontSize = this._canvas.scaleText(FONT_SIZE, MIN_FONT_PIXELS);
-    this._maxFontSize = this._canvas.scaleText(100);
+    this._fontSize = this._layer.scaleText(FONT_SIZE, MIN_FONT_PIXELS);
+    this._maxFontSize = this._layer.scaleText(100);
 
     const ctx = this._ctx;
 

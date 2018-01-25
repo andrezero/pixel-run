@@ -12,15 +12,15 @@ const GAME_OVER_SEC = 1000;
 const DEFAULT_SPEED = 1;
 
 class Game {
-  constructor (canvas, speed, config) {
-    this._canvas = canvas;
+  constructor (layer, speed, config) {
+    this._layer = layer;
     this._config = config;
 
     this._speed = speed || DEFAULT_SPEED;
 
     this._objects = new ObjCollection();
 
-    this._timeLeft = new TimeLeft(this._canvas, config.time, { zIndex: this._config.zIndex.hud });
+    this._timeLeft = new TimeLeft(this._layer, config.time, { zIndex: this._config.zIndex.hud });
     this._objects.add(this._timeLeft);
     this._timeLeft.onTime(() => {
       this._objects.destroyOne(this._timeLeft);
@@ -71,29 +71,26 @@ class Game {
     this._objects.destroyOne(this._level);
     this._objects.destroyOne(this._levelNumber);
     this._objects.destroyOne(this._player);
-    this._level = null;
-    this._player = null;
   }
 
   _restartLevel () {
-    this._objects.destroyOne(this._player);
-    this._objects.destroyOne(this._level);
+    this._destroyLevel();
     this._startLevel();
   }
 
   _startLevel () {
-    this._levelNumber = new LevelNumber(this._canvas, this._levelIx + 1, { zIndex: this._config.zIndex.hud });
+    this._levelNumber = new LevelNumber(this._layer, this._levelIx + 1, { zIndex: this._config.zIndex.hud });
     this._objects.add(this._levelNumber);
     const levelConfig = Object.assign({}, this._levels[this._levelIx], { zIndex: this._config.zIndex.level });
     const speed = levelConfig.speed * this._speed; ;
     const playerConfig = Object.assign({}, levelConfig.player, { zIndex: this._config.zIndex.player });
-    this._player = new Player(this._canvas, speed, playerConfig);
+    this._player = new Player(this._layer, speed, playerConfig);
     this._objects.add(this._player, 1);
-    this._level = new Level(this._canvas, this._levelIx, this._restarts, this._player, speed, levelConfig);
+    this._level = new Level(this._layer, this._levelIx, this._restarts, this._player, speed, levelConfig);
     this._objects.add(this._level, 0);
     this._player.onDie(() => {
       if (!this._deaths) {
-        this._deathsDisplay = new Deaths(this._canvas, { zIndex: this._config.zIndex.hud });
+        this._deathsDisplay = new Deaths(this._layer, { zIndex: this._config.zIndex.hud });
         this._objects.add(this._deathsDisplay, 0);
       }
       this._deaths++;

@@ -1,18 +1,12 @@
 'use strict';
 
-import { ObjCollection } from '../../lib/ObjCollection';
-import { sin, PI_3Q } from '../../lib/Maths';
-
 const PADDING = 10;
 const FONT_SIZE = 25;
 const MIN_FONT_PIXELS = 9;
 
 class Menu {
   constructor (layer, options) {
-    this._layer = layer;
-    this._canvas = layer._canvas;
-
-    this._layer = layer._canvas.newLayer('menu');
+    this._layer = layer.newLayer('menu');
     this._ctx = this._layer.ctx;
 
     this._fontSize = null;
@@ -21,8 +15,8 @@ class Menu {
     this._color = 'rgb(230, 230, 230)';
 
     this._pos = {
-      x: this._canvas.max.x,
-      y: this._canvas.max.y * 0.05
+      x: this._layer.max.x,
+      y: this._layer.max.y * 0.05
     };
 
     this._dim = null;
@@ -34,6 +28,16 @@ class Menu {
 
   // -- private
 
+  _formatText () {
+    const ctx = this._ctx;
+
+    ctx.font = this._fontSize + 'px pixel';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+
+    this._dim = this._ctx.measureText(this._text);
+  }
+
   // -- api
 
   // -- AppObject API
@@ -43,31 +47,32 @@ class Menu {
       this._pos.x = this._pos.x - delta / 1.5;
     }
 
-    if (!this._pauseTimestamp && this._pos.x < this._canvas.center.x - this._canvas.normalValue(this._dim.width) / 2) {
-      this._pos.x = this._canvas.center.x - this._canvas.normalValue(this._dim.width) / 2;
+    if (!this._pauseTimestamp && this._pos.x < this._layer.center.x - this._layer.normalValue(this._dim.width) / 2) {
+      this._pos.x = this._layer.center.x - this._layer.normalValue(this._dim.width) / 2;
       this._pauseTimestamp = timestamp;
     }
   }
 
   render (delta, timestamp) {
     const ctx = this._ctx;
-    const canvas = this._canvas;
 
     const dim = this._dim;
 
     const x = this._pos.x;
     const y = this._pos.y;
 
-    const width = canvas.normalValue(dim.width) + 2 * PADDING;
-    const height = canvas.normalValue(this._fontSize) + 2 * PADDING;
-    const rect = canvas.scaleArray([x - PADDING, y - PADDING, width, height]);
+    const width = this._layer.normalValue(dim.width) + 2 * PADDING;
+    const height = this._layer.normalValue(this._fontSize) + 2 * PADDING;
+    const rect = this._layer.scaleArray([x - PADDING, y - PADDING, width, height]);
 
     ctx.clearRect(...(this._lastRect || rect));
 
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
     ctx.fillRect(...rect);
+
+    this._formatText();
     ctx.fillStyle = this._color;
-    ctx.fillText(this._text, canvas.scaleValue(x), canvas.scaleValue(y));
+    ctx.fillText(this._text, this._layer.scaleValue(x), this._layer.scaleValue(y));
 
     this._lastRect = rect;
     this._lastRect[2] += 2;
@@ -75,14 +80,9 @@ class Menu {
   }
 
   resize () {
-    this._fontSize = this._canvas.scaleText(FONT_SIZE, MIN_FONT_PIXELS);
+    this._fontSize = this._layer.scaleText(FONT_SIZE, MIN_FONT_PIXELS);
 
-    const ctx = this._ctx;
-
-    ctx.font = this._fontSize + 'px pixel';
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'top';
-
+    this._formatText();
     this._dim = this._ctx.measureText(this._text);
   }
 

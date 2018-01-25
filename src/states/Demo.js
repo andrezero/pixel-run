@@ -3,7 +3,7 @@
 import { State } from '../../lib/State';
 import { ObjCollection } from '../../lib/ObjCollection';
 
-import { Message } from '../objects/Message';
+import { Text } from '../objects/Text';
 import { Level } from '../objects/Level';
 import { Player } from '../objects/Player';
 
@@ -11,13 +11,12 @@ const GAME_OVER_SEC = 1000;
 const DEFAULT_SPEED = 1;
 
 class Demo {
-  constructor (canvas, speed, levels, config) {
-    this._canvas = canvas;
+  constructor (layer, speed, levels, config) {
+    this._layer = layer;
     this._levels = levels;
     this._config = config;
 
-    this._textLayer = canvas.newLayer('demo-text', null, null, this._config.zIndex);
-
+    this._textLayer = layer.newLayer('demo-text', null, null, this._config.zIndex);
     this._objects = new ObjCollection();
 
     this._initialSpeed = (speed || DEFAULT_SPEED) * (Math.random(0.5) + 0.5);
@@ -35,9 +34,9 @@ class Demo {
   _delay () {
     window.clearTimeout(this._timeoutId);
     this._timeoutId = window.setTimeout(() => {
-      this._objects.add(new Message(this._textLayer, { y: this._canvas.max.y * 0.05, text: '<X> exit' }));
+      this._objects.add(new Text(this._textLayer, { y: this._layer.max.y * 0.05, text: '<X> exit' }));
       this._timeoutId = window.setTimeout(() => {
-        this._objects.add(new Message(this._textLayer, { y: this._canvas.max.y * 0.92, text: 'press <SPACE> to start' }));
+        this._objects.add(new Text(this._textLayer, { y: this._layer.max.y * 0.92, text: 'press <SPACE> to start' }));
       }, 2500);
     }, 500);
   }
@@ -62,10 +61,10 @@ class Demo {
     const levelConfig = Object.assign({}, this._levels[this._levelNum]);
     const speed = levelConfig.speed * this._speed; ;
     const player = Object.assign({}, levelConfig.player);
-    delete levelConfig.messages;
-    this._player = new Player(this._canvas, 4 * speed, player);
+    delete levelConfig.Texts;
+    this._player = new Player(this._layer, 4 * speed, player);
     this._objects.add(this._player, 1);
-    this._level = new Level(this._canvas, -1, null, this._player, speed, levelConfig);
+    this._level = new Level(this._layer, -1, null, this._player, speed, levelConfig);
     this._objects.add(this._level, 0);
     this._player.onDie(() => {
       this.deaths++;

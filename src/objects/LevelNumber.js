@@ -8,14 +8,12 @@ const FONT_SIZE = 40;
 const MIN_FONT_PIXELS = 20;
 
 class LevelNumber {
-  constructor (canvas, number, config) {
-    this._canvas = canvas;
-    this._config = config;
-    this._number = number;
-
-    this._layer = canvas.newLayer('level-num', null, null, this._config.zIndex);
+  constructor (layer, number, config) {
+    this._layer = layer.newLayer('foooo-num', null, null, config.zIndex);
     this._ctx = this._layer.ctx;
+    this._config = config;
 
+    this._number = number;
     this._maxFontSize = null;
     this._fontSize = null;
 
@@ -38,8 +36,8 @@ class LevelNumber {
 
     const hue = Math.round(30 * sin(timestamp));
 
-    const x = this._canvas.scaleValue(this._canvas.max.x * 0.98);
-    const y = this._canvas.scaleValue(this._canvas.max.y * 0.02);
+    const x = this._layer.scaleValue(this._layer.max.x * 0.98);
+    const y = this._layer.scaleValue(this._layer.max.y * 0.02);
 
     const dim = this._dim;
     const width = dim.width - 2;
@@ -55,8 +53,8 @@ class LevelNumber {
   }
 
   resize () {
-    this._fontSize = this._canvas.scaleText(FONT_SIZE, MIN_FONT_PIXELS);
-    this._maxFontSize = this._canvas.scaleText(100);
+    this._fontSize = this._layer.scaleText(FONT_SIZE, MIN_FONT_PIXELS);
+    this._maxFontSize = this._layer.scaleText(100);
 
     const ctx = this._ctx;
 
@@ -69,7 +67,6 @@ class LevelNumber {
 
   destroy () {
     this._layer.destroy();
-
     window.clearTimeout(this._timeoutId);
   }
 }

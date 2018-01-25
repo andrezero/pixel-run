@@ -1,10 +1,10 @@
 'use strict';
 
-// http://thecodeplayer.com/walkthrough/matrix-rain-animation-html5-canvas-javascript
+// http://thecodeplayer.com/walkthrough/matrix-rain-animation-html5-layer-javascript
 
 import { ObjCollection } from '../../lib/ObjCollection';
 
-import { Message } from '../objects/Message';
+import { Text } from '../objects/Text';
 
 const RANDOM_HEIGHT = 20;
 const COLUMNS = 40;
@@ -13,17 +13,15 @@ const BOX_PADDING = 15;
 const FADE = 0.9;
 
 class Intro {
-  constructor (canvas, config) {
-    this._canvas = canvas;
+  constructor (layer, config) {
+    this._layer = layer.newLayer('intro');
+    this._ctx = this._layer.ctx;
     this._config = config;
 
-    this._layer = canvas.newLayer('intro');
-    this._ctx = this._layer.ctx;
-
-    this._auxLayer = canvas.newVirtualLayer('intro-aux');
+    this._auxLayer = layer.newVirtualLayer('intro-aux');
     this._auxCtx = this._auxLayer.ctx;
 
-    this._textLayer = canvas.newLayer('intro-text', null, null, this._config.zIndex);
+    this._textLayer = layer.newLayer('intro-text', null, null, this._config.zIndex);
 
     this._columns = COLUMNS;
     this._size = Math.round(1000 / this._columns);
@@ -40,7 +38,7 @@ class Intro {
     window.clearTimeout(this._timeoutId);
     this._timeoutId = window.setTimeout(() => {
       this._slowDown = true;
-      this._objects.add(new Message(this._textLayer, { y: this._canvas.max.y * 0.60, size: 15, text: '(c) 2017 andrezero' }));
+      this._objects.add(new Text(this._textLayer, { y: this._layer.max.y * 0.60, size: 15, text: '(c) 2017 andrezero' }));
     }, 500);
   }
 
@@ -50,7 +48,7 @@ class Intro {
 
   update (delta, timestamp) {
     for (let ix = 0; ix < this._drops.length; ix++) {
-      if (this._drops[ix].y >= this._canvas.max.y) {
+      if (this._drops[ix].y >= this._layer.max.y) {
         this._drops[ix].y = -1 * RANDOM_HEIGHT * Math.random();
       }
       if (!this._slowDown || Math.random() < 0.3) {
@@ -62,16 +60,15 @@ class Intro {
 
   render (delta, timestamp) {
     const ctx = this._ctx;
-    const width = this._canvas.width;
-    const height = this._canvas.height;
+    const size = this._layer.size;
 
-    this._auxCtx.clearRect(0, 0, width, height);
-    this._auxCtx.globalAlpha = FADE;
-    this._auxCtx.drawImage(this._layer._element, 0, 0);
+    //this._auxCtx.clearRect(0, 0, width, height);
+    // this._auxCtx.globalAlpha = FADE;
+    // this._auxCtx.drawImage(this._layer._element, 0, 0);
 
-    // ctx.clearRect(0, 0, width, height);
+    this._ctx.clearRect(0, 0, size.w, size.h);
     ctx.globalCompositeOperation = 'copy';
-    ctx.drawImage(this._auxLayer._element, 0, 0);
+    //ctx.drawImage(this._auxLayer._element, 0, 0);
 
     ctx.globalCompositeOperation = 'source-over';
     ctx.fillStyle = 'rgba(80, 200, 80, ' + (this._slowDown ? '0.3' : '1') + ')';
@@ -83,7 +80,7 @@ class Intro {
       const x = Math.round(ix * this._size);
       const y = Math.round(this._drops[ix].y);
       const rect = [x - BOX_PADDING, y - BOX_PADDING, this._size + BOX_PADDING, this._size + BOX_PADDING];
-      ctx.fillRect(...this._canvas.scaleArray(rect));
+      ctx.fillRect(...this._layer.scaleArray(rect));
     }
   }
 

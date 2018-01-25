@@ -7,11 +7,10 @@ var HEIGHT = 50;
 var Y_SPEED = 80;
 
 class Drop {
-  constructor (canvas, config) {
-    this._canvas = canvas;
+  constructor (layer, config) {
+    this._layer = layer;
+    this._ctx = layer.ctx;
     this._config = config;
-
-    this._ctx = canvas.ctx;
 
     this._objects = new ObjCollection();
 
@@ -43,7 +42,7 @@ class Drop {
   }
 
   render (delta, timestamp) {
-    const rect = this._canvas.scaleArray([this._pos.x, this._pos.y, WIDTH, HEIGHT]);
+    const rect = this._layer.scaleArray([this._pos.x, this._pos.y, WIDTH, HEIGHT]);
     this._ctx.fillStyle = 'rgb(255,0,0)';
     this._ctx.fillRect(...rect);
   }

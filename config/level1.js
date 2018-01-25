@@ -25,7 +25,7 @@ const level = {
       {trigger: 300, pos: 400, freq: 1}
     ],
     messages: [
-      {restarts: 1, text: 'press <SPACE> to slow down'}
+      {restarts: 1, text: 'hold down <SPACE> to slow down'}
     ]
   }, {
     speed: 1.1,

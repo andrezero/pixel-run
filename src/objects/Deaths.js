@@ -9,13 +9,12 @@ const FONT_SIZE = 40;
 const MIN_FONT_PIXELS = 20;
 
 class Deaths {
-  constructor (canvas, config, number) {
-    this._canvas = canvas;
+  constructor (layer, config, number) {
+    this._layer = layer.newLayer('deaths', null, null, config.zIndex);
+    this._ctx = this._layer.ctx;
     this._config = config;
     this._number = number;
 
-    this._layer = canvas.newLayer('deaths', null, null, this._config.zIndex);
-    this._ctx = this._layer.ctx;
 
     this._maxFontSize = null;
     this._fontSize = null;
@@ -51,8 +50,8 @@ class Deaths {
       this._timestamp = timestamp;
     }
 
-    const x = this._canvas.scaleValue(this._canvas.max.x * 0.02);
-    const y = this._canvas.scaleValue(this._canvas.max.y * 0.02);
+    const x = this._layer.scaleValue(this._layer.max.x * 0.02);
+    const y = this._layer.scaleValue(this._layer.max.y * 0.02);
 
     const dim = this._dim;
     const width = WIDTH + dim.width - 2 + PADDING * 4;
@@ -69,8 +68,8 @@ class Deaths {
   }
 
   resize () {
-    this._fontSize = this._canvas.scaleText(FONT_SIZE, MIN_FONT_PIXELS);
-    this._maxFontSize = this._canvas.scaleText(100);
+    this._fontSize = this._layer.scaleText(FONT_SIZE, MIN_FONT_PIXELS);
+    this._maxFontSize = this._layer.scaleText(100);
 
     const ctx = this._ctx;
 

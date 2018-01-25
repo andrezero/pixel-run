@@ -5,19 +5,19 @@ import { collision } from '../../lib/Maths';
 
 import { Drop } from './Drop';
 import { LevelNumber } from './LevelNumber';
-import { Message } from './Message';
+import { Text } from './Text';
 import { Wall } from './Wall';
 
 const DEFAULT_SPEED = 1;
 
 class Level {
-  constructor (canvas, number, restarts, player, speed, config) {
-    this._canvas = canvas;
+  constructor (layer, number, restarts, player, speed, config) {
+    this._layer = layer;
     this._config = config;
 
     this._layers = {
-      walls: canvas.newLayer('walls', null, null, this._config.zIndex),
-      messages: canvas.newLayer('messages', null, null, this._config.zIndex)
+      walls: layer.newLayer('walls', null, null, this._config.zIndex),
+      messages: layer.newLayer('messages', null, null, this._config.zIndex)
     };
 
     this._restarts = restarts;
@@ -36,16 +36,16 @@ class Level {
     this._objects = new ObjCollection();
 
     for (let ix = 0; ix < config.walls.length; ix++) {
-      let wall = new Wall(canvas, this._layers.walls, this._speed, config.walls[ix]);
+      let wall = new Wall(this._layers.walls, this._speed, config.walls[ix]);
       this._objects.add(wall, null, {collision: true});
     }
 
     for (let ix = 0; ix < this._config.messages.length; ix++) {
       let msg = this._config.messages[ix];
-      msg.y = this._canvas.max.y * 0.95;
+      msg.y = this._layer.max.y * 0.95;
       msg.size = 20;
       if (!msg.restarts || this._restarts >= msg.restarts) {
-        let message = new Message(this._layers.messages, msg);
+        let message = new Text(this._layers.messages, msg);
         this._objects.add(message);
       }
     }
@@ -59,7 +59,7 @@ class Level {
 
   freeze () {
     this._objects.each((item) => {
-      if (item.obj.constructor.name === 'Message') {
+      if (item.obj.hide) {
         item.obj.hide();
       }
     });
@@ -97,8 +97,6 @@ class Level {
   }
 
   destroy () {
-    this._objects.destroyAll();
-
     for (let key in this._layers) {
       this._layers[key].destroy();
     }

@@ -8,17 +8,13 @@ const DEFAULT_SIZE = 90;
 class Header {
   constructor (layer, config) {
     this._layer = layer;
-    this._canvas = layer._canvas;
+    this._ctx = layer.ctx;
     this._config = config;
 
-    this._config.y = this._config.y || this._canvas.center.y;
+    this._config.y = this._config.y || this._layer.center.y;
     this._config.size = this._config.size || DEFAULT_SIZE;
 
     this._text = config.text;
-
-    // this._layer = layer._canvas.newLayer('header', null, null, this._config.zIndex);
-    this._ctx = this._layer.ctx;
-
     this._fontSize = null;
     this._pos = null;
     this._scaledPos = null;
@@ -48,7 +44,7 @@ class Header {
 
   render (delta, timestamp) {
     const ctx = this._ctx;
-    const canvas = this._canvas;
+    const canvas = this._layer;
 
     if (this._slowDown && this._skipped++ < this._skip) {
       return;
@@ -63,7 +59,7 @@ class Header {
 
     const iteration = this._iteration;
 
-    const pos = this._canvas.scalePoint(this._pos);
+    const pos = this._layer.scalePoint(this._pos);
     const slowDown = this._slowDown;
 
     let x = canvas.scaleValue(Math.cos(iteration * (slowDown ? 5 : 50)) * 5) + pos.x;
@@ -81,16 +77,14 @@ class Header {
   }
 
   resize () {
-    this._fontSize = this._canvas.scaleText(this._config.size);
+    this._fontSize = this._layer.scaleText(this._config.size);
     this._pos = {
-      x: this._canvas.center.x,
+      x: this._layer.center.x,
       y: this._config.y
     };
   }
 
   destroy () {
-    this._layer.destroy();
-
     window.clearTimeout(this._timeoutId);
   }
 }

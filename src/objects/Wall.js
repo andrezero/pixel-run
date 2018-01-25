@@ -7,12 +7,10 @@ const DEFAULT_SPEED = 1;
 const WIDTH = 10;
 
 class Wall {
-  constructor (canvas, layer, speed, config) {
-    this._canvas = canvas;
+  constructor (layer, speed, config) {
     this._layer = layer;
+    this._ctx = layer.ctx;
     this._config = config;
-
-    this._ctx = this._layer.ctx;
 
     this._objects = new ObjCollection();
 
@@ -33,7 +31,7 @@ class Wall {
     if (this._config.pos === 'top') {
       this.pos.y = 0;
     } else {
-      this.pos.y = this._canvas.max.y - this.size.h;
+      this.pos.y = this._layer.max.y - this.size.h;
     }
   }
 
@@ -53,13 +51,13 @@ class Wall {
 
       this.size.h = Math.round(sin(time * this._freq * this._speed, this._minSize, this._maxSize, this._phase));
       if (this._config.pos === 'bottom') {
-        this.pos.y = this._canvas.max.y - this.size.h;
+        this.pos.y = this._layer.max.y - this.size.h;
       }
     }
   }
 
   render (delta, timestamp) {
-    const rect = this._canvas.scaleArray([this.pos.x, this.pos.y, this.size.w, this.size.h]);
+    const rect = this._layer.scaleArray([this.pos.x, this.pos.y, this.size.w, this.size.h]);
     this._ctx.fillStyle = this._color;
     this._ctx.fillRect(...rect);
   }
