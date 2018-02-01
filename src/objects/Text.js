@@ -15,7 +15,7 @@ class Text {
     this._config.y = this._config.y || this._layer.center.y;
     this._config.color = this._config.color || DEFAULT_COLOR;
     this._config.size = this._config.size || DEFAULT_SIZE;
-    this._config.bgColor = this._config.bgColor || 'black';
+    this._config.bgColor = this._config.bgColor;
     this._config.align = this._config.align || 'center';
     this._config.baseline = this._config.baseline || 'top';
 
@@ -68,12 +68,13 @@ class Text {
 
     this._formatText();
 
-    ctx.fillStyle = this._config.bgColor;
-    ctx.fillRect(...this._rect);
-
     ctx.clearRect(...this._rect);
 
-    ctx.fillRect(...this._rect);
+    if (this._config.bgColor) {
+      ctx.fillStyle = this._config.bgColor;
+      ctx.fillRect(...this._rect);
+    }
+
     ctx.fillStyle = this._config.color;
     ctx.fillText(this._text, pos.x, pos.y);
   }
