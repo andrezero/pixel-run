@@ -9,7 +9,7 @@ const MIN_FONT_PIXELS = 20;
 
 class LevelNumber {
   constructor (layer, number, config) {
-    this._layer = layer.newLayer('foooo-num', null, null, config.zIndex);
+    this._layer = layer.newLayer('level-num', null, null, config.zIndex);
     this._ctx = this._layer.ctx;
     this._config = config;
 

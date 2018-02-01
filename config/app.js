@@ -26,7 +26,7 @@ var CONFIG = {
     },
     instructions: {},
     play: {
-      time: 20, //213,
+      time: 213,
       zIndex: {
         hud: 10,
         player: 5,
@@ -34,8 +34,8 @@ var CONFIG = {
       },
       speed: 1.2,
       startLevel: 0,
-      // levels: level1.tiles // [level1.tiles[6]]
-      levels: [level1.tiles[0],level1.tiles[6]]
+      levels: level1.tiles
+      // levels: [level1.tiles[0],level1.tiles[6]]
     },
     pause: {},
     gameOver: {
