@@ -29,7 +29,7 @@ class Button {
     this._label = new Text(this._layer, this._configOff, text);
     this._objects.add(this._label);
 
-    const overFn = (evt) => collision([evt.x, evt.y, 0, 0], this._rect);
+    const overFn = (evt) => collision([evt.x, evt.y, 0, 0], this._label._rect);
     this._interactive = new Interactive(this._layer, overFn, 'pointer');
 
     this._interactive.on('down', () => {
@@ -70,8 +70,6 @@ class Button {
     };
 
     this._requireRender = false;
-
-    this.resize();
   }
 
   // -- private
@@ -100,14 +98,10 @@ class Button {
     this._requireRender = false;
     const ctx = this._ctx;
 
-    ctx.clearRect(...this._rect);
+    ctx.clearRect(...this._label._rect);
 
     ctx.fillStyle = this._currentConfig.fillStyle;
-    ctx.fillRect(...this._rect);
-  }
-
-  resize () {
-    this._rect = this._label._rect;
+    ctx.fillRect(...this._label._rect);
   }
 
   destroy () {
