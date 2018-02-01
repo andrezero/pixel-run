@@ -1,14 +1,17 @@
 # TODO
 
-- pause when focus lost
-- about the game
-  - developed by andrezero
-  - made with javascript / canvas
-  - how much did you like this game?
-  - send me your feedback
-- instructions
-- scores
+- flash of unstyled text (bind event for font loading)
+- bug on demo, messages not always visible (x to exit, space to play)
+- show instructions
+- show x0 from the beggining
+- bug on score, L still visible
 - heroku
+
+- turn some messages (x to exit, space to play) into buttons
+
+- pause when focus lost
+- abort when focus lost for too long
+- pause
 - split out lib canvas
 - github canvas lib readme - features, todo
 - position layers
@@ -55,3 +58,7 @@
 - render ability icons
 - render with quantity
 - render with direction tilt
+
+- lib
+  - loader
+  - coordinate systems
