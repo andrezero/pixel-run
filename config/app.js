@@ -43,7 +43,10 @@ var CONFIG = {
     },
     scores: {},
     about: {
-      feedback: 'https://andrezero.typeform.com/to/rTl0RU'
+      url: {
+        author: 'http://andretorgal.com',
+        feedback: 'https://andrezero.typeform.com/to/rTl0RU'
+      }
     },
     credits: {}
   },

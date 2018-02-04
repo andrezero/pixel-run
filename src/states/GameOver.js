@@ -17,7 +17,7 @@ const POINTS_PER_SECOND = 1294;
 const POINTS_PER_LEVEL = 1250;
 const POINTS_PER_DEATH = 123;
 
-function padScore (num1, num2, length, sign) {
+const padScore = (num1, num2, length, sign) => {
   const str1 = '' + num1;
   const str2 = '' + num1;
   let ret = '';
@@ -27,7 +27,7 @@ function padScore (num1, num2, length, sign) {
     dots += '.';
   } while (ret.length < length);
   return ret;
-}
+};
 
 class GameOver {
   constructor (layer, game, config) {

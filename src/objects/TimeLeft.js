@@ -8,13 +8,13 @@ const PADDING = 4;
 const FONT_SIZE = 20;
 const MIN_FONT_PIXELS = 10;
 
-function padLeft (number) {
+const padLeft = (number) => {
   let str = '' + number;
   if (str.length < 2) {
     str = '0' + str;
   }
   return str;
-}
+};
 
 class TimeLeft {
   constructor (layer, time, config) {

@@ -17,9 +17,10 @@ class About {
     this._objects = new ObjCollection();
 
     this._linkConfig = {
-      bgColor: 'orange', color: 'black',
+      bgColor: 'orange',
+      color: 'black',
       over: { bgColor: 'white', color: 'black' },
-      on: { bgColor: 'yellow', color: 'black' },
+      on: { bgColor: 'yellow', color: 'black' }
     };
 
     this._delay();
@@ -34,9 +35,8 @@ class About {
       this._objects.add(new Text(this._textLayer, { y: this._layer.max.y * 0.45, text: 'developed by' }));
 
       let button1 = new Button(this._textLayer, Object.assign({}, { y: this._layer.max.y * 0.50, text: 'andrezero' }, this._linkConfig));
-      button1.on('tap', function () {
-        // window.location.href = 'http://google.com/';
-        console.log('=>');
+      button1.on('tap', () => {
+        window.location.href = this._config.url.author;
       });
       this._objects.add(button1);
 
@@ -45,8 +45,7 @@ class About {
       let button2 = new Button(this._textLayer, Object.assign({}, { y: this._layer.max.y * 0.70, text: 'send your feedback' }, this._linkConfig));
       this._objects.add(button2);
       button2.on('tap', () => {
-        // window.location.href = 'http://google.com/';
-        console.log('=>');
+        window.location.href = this._config.url.feedback;
       });
 
       this._objects.add(new Text(this._textLayer, { y: this._layer.max.y * 0.05, text: '<X> exit' }));
