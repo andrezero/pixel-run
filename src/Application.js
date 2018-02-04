@@ -1,10 +1,10 @@
-'use strict';
-
+import { Loader } from '../lib/Loader.js';
 import { State } from '../lib/State.js';
 import { ObjCollection } from '../lib/ObjCollection.js';
 import { Frame } from '../lib/Frame.js';
 import { Canvas } from '../lib/Canvas.js';
 import { Fps } from '../lib/Fps.js';
+import { later } from '../lib/util.js';
 
 import { Intro } from './states/Intro.js';
 import { Splash } from './states/Splash.js';
@@ -15,6 +15,8 @@ import { GameOver } from './states/GameOver.js';
 import { Scores } from './states/Scores.js';
 import { About } from './states/About.js';
 import { Credits } from './states/Credits.js';
+
+import style from './styles/style.css';
 
 const SPEED = 1;
 const RESET_SEC = 0.1;
@@ -66,6 +68,9 @@ class Application {
 
     this._state = new State('App', stateTranstions, true);
 
+    this._loader = new Loader();
+    this._loaded = this._loader.load(config.assets);
+
     this._objects = new ObjCollection();
     this._canvas = new Canvas(this._container, this._config.canvas);
     this._frame = new Frame(this._objects, this._canvas, config.frame);
@@ -92,6 +97,7 @@ class Application {
   }
 
   // -- public
+
   showFps () {
     if (!this._fps) {
       this._fps = new Fps(this._canvas);
@@ -149,9 +155,11 @@ class Application {
       this._intro = new Intro(this._canvas, this._config.state.intro);
       this._objects.add(this._intro);
 
-      autoTransition = window.setTimeout(() => {
+      const delay = later(INTRO_SEC * 1000);
+
+      Promise.all([delay, this._loaded]).then(() => {
         this.splash();
-      }, INTRO_SEC * 1000);
+      });
     };
 
     const leaveState = (newState) => {

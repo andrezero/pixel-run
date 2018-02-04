@@ -1,6 +1,5 @@
 # TODO
 
-- flash of unstyled text (bind event for font loading)
 - bug on demo, messages not always visible (x to exit, space to play)
 - show instructions
 - show x0 from the beggining

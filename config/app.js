@@ -46,7 +46,8 @@ var CONFIG = {
       feedback: 'https://andrezero.typeform.com/to/rTl0RU'
     },
     credits: {}
-  }
+  },
+  assets: ['../assets/pixel.woff']
 };
 
 export {

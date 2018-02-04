@@ -11,11 +11,6 @@ html, body {
   align-items: stretch;
   height: 100%;
 }
-/*
-.container {
-  margin: 0;
-  width: 100;
-}*/
 
 .site-header {
   flex: 0 1 50px;

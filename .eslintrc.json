@@ -8,6 +8,7 @@
     "document": false,
     "window": false,
     "console": false,
+    "FontFaceObserver": false,
     "APP_DATA": false,
     "State": false,
     "App": false,

@@ -26,6 +26,7 @@ class Splash {
     this._timeoutId = window.setTimeout(() => {
       this._objects.add(new Header(this._layer, { y: this._layer.center.y, size: 150, text: 'pixel-run' }));
       this._objects.add(new Text(this._textLayer, { y: this._layer.max.y * 0.90, size: 30, text: 'press <SPACE> to start' }));
+      this._objects.add(new Text(this._textLayer, { y: this._layer.max.y * 0.60, size: 15, text: '(c) 2017 andrezero' }));
       this._objects.add(new Menu(this._textLayer, ['<I> instructions', '<A> about']));
     }, 500);
   }
