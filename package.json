@@ -1,27 +1,21 @@
 {
   "name": "pixel-run",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.1.0",
+  "description": "a javascript canvas mini game",
+  "license": "MIT",
+  "homepage": "https://github.com/andrezero/pixel-run",
+  "author": "Andre Torgal <andre.torgal@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andrezero/pixel-run.git"
+  },
   "scripts": {
     "dev": "webpack-dev-server --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js",
-    "start": "node ./bin/www",
+    "start": "webpack --config webpack.prod.js && node ./bin/www",
     "lint": "eslint src/ lib/",
     "lint-fix": "eslint --fix src/ lib/",
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "eslint": "^4.10.0",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-node": "^5.2.1",
-    "eslint-plugin-promise": "^3.6.0",
-    "eslint-plugin-standard": "^3.0.1",
-    "http-server": "^0.11.1",
-    "webpack-dev-server": "^2.9.3"
   },
   "dependencies": {
     "babel-core": "^6.26.0",
@@ -36,5 +30,15 @@
     "lodash-es": "^4.17.5",
     "style-loader": "^0.20.1",
     "webpack": "^3.8.1"
+  },
+  "devDependencies": {
+    "eslint": "^4.10.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "http-server": "^0.11.1",
+    "webpack-dev-server": "^2.9.3"
   }
 }
