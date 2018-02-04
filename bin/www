@@ -4,8 +4,15 @@ const path = require('path');
 const pkg = require('../package.json');
 const app = express();
 
-const forceSSL = function () {
-  return function (req, res, next) {
+const dist = path.join(__dirname, '../dist');
+const index = path.join(__dirname, '../dist/index.html');
+
+const log = (msg) => {
+  console.log(`${pkg.name} ${pkg.version} > ${msg}`);
+};
+
+const forceSSL = () => {
+  return (req, res, next) => {
     if (req.headers['x-forwarded-proto'] !== 'https') {
       const path = 'https://' + req.get('Host') + req.url;
       return res.redirect(path);
@@ -15,16 +22,22 @@ const forceSSL = function () {
 };
 
 if (process.env.NODE_ENV === 'production') {
-  console.log('force ssl');
+  log('force ssl');
   app.use(forceSSL());
 }
 
-app.use(express.static(path.join(__dirname, '../dist')));
+app.use((req, res, next) => {
+  log(`${req.method} ${req.path}`);
+  next();
+});
 
-app.get('/*', function (req, res) {
-  res.sendFile(path.join(path.join(__dirname, '../dist/index.html')));
+app.use(express.static(dist));
+
+app.use((req, res) => {
+  log(`${req.method} ${req.path} > 404`);
+  res.status(404).send('not found');
 });
 
 const port = process.env.PORT || 8080;
 
-app.listen(port, () => console.log(pkg.name + ' ' + pkg.version + ' listening on ' + port));
+app.listen(port, () => log(`listening on ${port} serving from ${dist}`));
