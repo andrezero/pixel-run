@@ -15,8 +15,6 @@
   "editor.formatOnPaste": true,
   // Format a file on save. A formatter must be available, the file must not be auto-saved, and editor must not be shutting down.
   "editor.formatOnSave": false,
-  // Enable/disable JavaScript validation.
-  "javascript.validate.enable": true,
   // Enable/disable default JavaScript formatter.
   "javascript.format.enable": false,
   // Controls whether eslint is enabled for JavaScript files or not.
