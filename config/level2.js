@@ -1,5 +1,3 @@
-'use strict';
-
 import { sin, PI_1H, PI_2H, PI_3H } from '../lib/Maths';
 
 const level = {

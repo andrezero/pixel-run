@@ -1,5 +1,3 @@
-'use strict';
-
 const PADDING = 10;
 const DEFAULT_SIZE = 20;
 const MIN_FONT_PIXELS = 9;

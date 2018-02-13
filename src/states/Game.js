@@ -1,5 +1,3 @@
-'use strict';
-
 import { ObjCollection } from '../../lib/ObjCollection';
 
 import { Level } from '../objects/Level';
@@ -14,18 +12,20 @@ const DEFAULT_SPEED = 1;
 class Game {
   constructor (layer, speed, config) {
     this._layer = layer;
-    this._config = config;
-
     this._speed = speed || DEFAULT_SPEED;
+    this._config = config;
 
     this._objects = new ObjCollection();
 
     this._timeLeft = new TimeLeft(this._layer, config.time, { zIndex: this._config.zIndex.hud });
     this._objects.add(this._timeLeft);
     this._timeLeft.onTime(() => {
-      this._objects.destroyOne(this._timeLeft);
       this._gameOver();
     });
+
+    this._deathsDisplay = new Deaths(this._layer, { zIndex: this._config.zIndex.hud });
+    this._deathsDisplay.setNumber(0);
+    this._objects.add(this._deathsDisplay, 0);
 
     this._onGameOverCallback = null;
     this._onCompleteCallback = null;
@@ -43,28 +43,27 @@ class Game {
 
   // - state
 
-  _gameOver () {
+  _destroyHud () {
     if (this._level) {
       this._level.freeze();
     }
-    if (this._deathsDisplay) {
-      this._objects.destroyOne(this._deathsDisplay);
-    }
+    window.setTimeout(() => this._objects.destroyOne(this._deathsDisplay), 500);
+    window.setTimeout(() => this._objects.destroyOne(this._timeLeft), 750);
+    window.setTimeout(() => this._objects.destroyOne(this._levelNumber), 1000);
+  }
+
+  _gameOver () {
     this._state = 'game-over';
     this._onGameOverCallback();
     this._player.explode();
+    this._destroyHud();
   }
 
   _complete () {
-    if (this._level) {
-      this._level.freeze();
-    }
-    if (this._deathsDisplay) {
-      this._objects.destroyOne(this._deathsDisplay);
-    }
     this._state = 'game-over';
     this._onCompleteCallback();
     this._player.expand();
+    this._destroyHud();
   }
 
   _destroyLevel () {
@@ -89,10 +88,6 @@ class Game {
     this._level = new Level(this._layer, this._levelIx, this._restarts, this._player, speed, levelConfig);
     this._objects.add(this._level, 0);
     this._player.onDie(() => {
-      if (!this._deaths) {
-        this._deathsDisplay = new Deaths(this._layer, { zIndex: this._config.zIndex.hud });
-        this._objects.add(this._deathsDisplay, 0);
-      }
       this._deaths++;
       this._deathsDisplay.setNumber(this._deaths);
       this._restarts++;

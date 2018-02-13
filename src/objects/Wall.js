@@ -1,5 +1,3 @@
-'use strict';
-
 import { ObjCollection } from '../../lib/ObjCollection';
 import { sin, PI_3Q } from '../../lib/Maths';
 

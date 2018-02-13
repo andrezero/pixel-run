@@ -1,11 +1,14 @@
-'use strict';
-
+import { makeEmitter, emitterMixin } from '../../lib/emitter';
 import { State } from '../../lib/State';
 import { ObjCollection } from '../../lib/ObjCollection';
 
+import { Header } from '../objects/Header';
 import { Text } from '../objects/Text';
 import { Level } from '../objects/Level';
 import { Player } from '../objects/Player';
+import { Button } from '../objects/Button';
+
+import { buttonPrimary as btnStyle, buttonSecondary as btnSecStyle } from '../styles';
 
 const GAME_OVER_SEC = 1000;
 const DEFAULT_SPEED = 1;
@@ -26,6 +29,17 @@ class Demo {
     this._restarts = 0;
     this._levelNum = config.startLevel || 0;
 
+    this._emitter = makeEmitter();
+    emitterMixin(this, this._emitter);
+
+    this.keyup = (event) => {
+      switch (event.which) {
+        case 32: this._emitter.emit('play', 'keyboard'); break;
+        case 27: this._emitter.emit('exit'); break;
+      }
+    };
+    document.addEventListener('keyup', this.keyup);
+
     this._startLevel();
 
     this._delay();
@@ -34,10 +48,20 @@ class Demo {
   _delay () {
     window.clearTimeout(this._timeoutId);
     this._timeoutId = window.setTimeout(() => {
-      this._objects.add(new Text(this._textLayer, { y: this._layer.max.y * 0.05, text: '<X> exit' }));
-      this._timeoutId = window.setTimeout(() => {
-        this._objects.add(new Text(this._textLayer, { y: this._layer.max.y * 0.92, text: 'press <SPACE> to start' }));
-      }, 2500);
+      this._objects.add(new Header(this._textLayer, { y: this._layer.max.y * 0.15, size: 100, text: 'pixel-run' }));
+    }, 250);
+
+    this._timeoutId = window.setTimeout(() => {
+      const buttonExit = new Button(this._textLayer, Object.assign({}, { y: this._layer.max.y * 0.05, x: this._layer.max.x * 0.92, text: '<ESC>' }, btnSecStyle));
+      buttonExit.on('tap', (evt) => this._emitter.emit('exit'));
+      this._objects.add(buttonExit);
+    }, 400);
+
+    this._timeoutId = window.setTimeout(() => {
+      this._objects.add(new Text(this._textLayer, { y: this._layer.max.y * 0.90, size: 20, text: 'or <SPACE> to start' }));
+      const buttonStart = new Button(this._textLayer, Object.assign({}, { y: this._layer.max.y * 0.80, size: 50, text: ' play ' }, btnStyle));
+      buttonStart.on('tap', (evt) => this._emitter.emit('play'));
+      this._objects.add(buttonStart);
     }, 500);
   }
 
@@ -89,6 +113,8 @@ class Demo {
 
   destroy () {
     this._textLayer.destroy();
+
+    document.removeEventListener('keyup', this.keyup);
   }
 }
 

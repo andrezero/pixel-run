@@ -1,5 +1,3 @@
-'use strict';
-
 import { ObjCollection } from '../../lib/ObjCollection';
 import { ramp, sin, easeOutCubic, easeInCubic } from '../../lib/Maths';
 

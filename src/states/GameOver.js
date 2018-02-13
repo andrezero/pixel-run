@@ -1,5 +1,4 @@
-'use strict';
-
+import { makeEmitter, emitterMixin } from '../../lib/emitter';
 import { State } from '../../lib/State';
 import { ObjCollection } from '../../lib/ObjCollection';
 import { ramp, easeInQuad, easeInCubic } from '../../lib/Maths';
@@ -9,6 +8,9 @@ import { Text } from '../objects/Text';
 import { LevelNumber } from '../objects/LevelNumber';
 import { Deaths } from '../objects/Deaths';
 import { TimeLeft } from '../objects/TimeLeft';
+import { Button } from '../objects/Button';
+
+import { buttonPrimary as btnStyle, buttonSecondary as btnSecStyle } from '../styles';
 
 const SCORE_MS = 1250;
 const FADE_MS = 2000;
@@ -58,6 +60,17 @@ class GameOver {
     this._deaths = null;
     this._total = null;
 
+    this._emitter = makeEmitter();
+    emitterMixin(this, this._emitter);
+
+    this.keyup = (event) => {
+      switch (event.which) {
+        case 32: this._emitter.emit('play', 'keyboard'); break;
+        case 27: this._emitter.emit('exit'); break;
+      }
+    };
+    document.addEventListener('keyup', this.keyup);
+
     this._delay();
   }
 
@@ -69,8 +82,15 @@ class GameOver {
       this._objects.add(new Header(this._layer, { y: this._layer.max.y * 0.15, size: 90, text: text }));
       this._render = 1;
       this._timeoutId = window.setTimeout(() => {
-        this._objects.add(new Text(this._textLayer, { y: this._layer.max.y * 0.05, text: '<X> exit' }));
-        this._objects.add(new Text(this._textLayer, { y: this._layer.max.y * 0.92, size: 20, text: 'press <SPACE> to restart' }));
+        const buttonExit = new Button(this._textLayer, Object.assign({}, { y: this._layer.max.y * 0.05, x: this._layer.max.x * 0.92, text: '<ESC>' }, btnSecStyle));
+        buttonExit.on('tap', (evt) => this._emitter.emit('exit'));
+        this._objects.add(buttonExit);
+
+        const buttonStart = new Button(this._textLayer, Object.assign({}, { y: this._layer.max.y * 0.80, size: 50, text: ' play ' }, btnStyle));
+        buttonStart.on('tap', (evt) => this._emitter.emit('play'));
+        this._objects.add(buttonStart);
+
+        this._objects.add(new Text(this._textLayer, { y: this._layer.max.y * 0.90, size: 20, text: 'or <SPACE> to restart' }));
       }, 250);
     }, 750);
   }
@@ -83,9 +103,9 @@ class GameOver {
 
     this._fadeTimestamp = this._fadeTimestamp || timestamp;
     if (timestamp - this._fadeTimestamp < FADE_MS) {
-      const alpha = ramp((timestamp - this._fadeTimestamp) / FADE_MS, 0, 0.8, easeInCubic);
+      const alpha = ramp((timestamp - this._fadeTimestamp) / FADE_MS, 0, 0.6, easeInCubic);
       this._layer.clear();
-      ctx.fillStyle = score.complete ? 'rgba(50,120,20,' + alpha + ')' : 'rgba(120,50,20,' + alpha + ')';
+      ctx.fillStyle = score.complete ? 'rgba(0,40,0,' + alpha + ')' : 'rgba(60,0,0,' + alpha + ')';
       ctx.fillRect(0, 0, this._layer.size.w, this._layer.size.h);
     }
 
@@ -106,7 +126,7 @@ class GameOver {
           this._time = new Text(this._textLayer, { x, size, align, baseline, color: 'green', y: this._layer.max.y * 0.3 });
           this._objects.add(this._time);
         }
-        this._time.setText('T' + padScore(Math.ceil(time), Math.ceil(time * POINTS_PER_SECOND), 13, '+'));
+        this._time.setText('TIME LEFT ' + padScore(Math.ceil(time), Math.ceil(time * POINTS_PER_SECOND), 13, '+'));
       }
       if (this._render === 2) {
         level = Math.min(score.level, level * scaleUp);
@@ -114,7 +134,7 @@ class GameOver {
           this._level = new Text(this._textLayer, { x, size, align, baseline, color: 'orange', y: this._layer.max.y * 0.4 });
           this._objects.add(this._level);
         }
-        this._level.setText('L' + padScore(Math.ceil(level), Math.ceil(level * POINTS_PER_LEVEL), 13, '+'));
+        this._level.setText('LEVEL ' + padScore(Math.ceil(level), Math.ceil(level * POINTS_PER_LEVEL), 17, '+'));
       }
       if (this._render === 3) {
         deaths = Math.min(score.deaths, deaths * scaleUp);
@@ -122,7 +142,7 @@ class GameOver {
           this._deaths = new Text(this._textLayer, { x, size, align, baseline, color: 'red', y: this._layer.max.y * 0.5 });
           this._objects.add(this._deaths);
         }
-        this._deaths.setText('x' + padScore(Math.ceil(deaths), Math.ceil(deaths * POINTS_PER_DEATH), 13, '-'));
+        this._deaths.setText('DEATHS ' + padScore(Math.ceil(deaths), Math.ceil(deaths * POINTS_PER_DEATH), 16, '-'));
       }
       if (this._render === 4) {
         total = Math.min(total, Math.ceil(total * scaleUp));
@@ -130,7 +150,7 @@ class GameOver {
           this._total = new Text(this._textLayer, { x, size: size * 1.5, baseline, color: 'white', y: this._layer.max.y * 0.65 });
           this._objects.add(this._total);
         }
-        this._total.setText(' > ' + total + ' < ');
+        this._total.setText('SCORE: ' + total);
       }
       if (scaleUp >= 1) {
         this._stepTimestamp = timestamp;
@@ -151,6 +171,7 @@ class GameOver {
     this._textLayer.destroy();
 
     window.clearTimeout(this._timeoutId);
+    document.removeEventListener('keyup', this.keyup);
   }
 }
 

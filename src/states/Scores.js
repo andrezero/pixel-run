@@ -1,5 +1,3 @@
-'use strict';
-
 import { State } from '../../lib/State';
 import { ObjCollection } from '../../lib/ObjCollection';
 
@@ -33,7 +31,7 @@ class Scores {
     this._timeoutId = window.setTimeout(() => {
       this._objects.add(new Header(this._layer, { y: this._layer.max.y * 0.15, size: 90, text: 'high scores' }));
       this._objects.add(new Text(this._layer, { y: this._layer.max.y * 0.05, text: '<X> exit' }));
-      this._objects.add(new Text(this._layer, { y: this._layer.max.y * 0.92, size: 20, text: 'press <SPACE> to start' }));
+      this._objects.add(new Text(this._layer, { y: this._layer.max.y * 0.92, size: 20, text: 'or <SPACE> to start' }));
       this._slowDown = true;
     }, 500);
   }

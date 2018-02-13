@@ -1,5 +1,3 @@
-'use strict';
-
 import { ObjCollection } from '../../lib/ObjCollection';
 import { sin, cos, ramp, easeInCubic, PI_1H, PI_2H, PI_3H } from '../../lib/Maths';
 
@@ -24,11 +22,11 @@ class Player {
   constructor (layer, speed, config) {
     this._layer = layer.newLayer('player', null, null, config.zIndex);
     this._ctx = this._layer.ctx;
+    this._speed = speed || DEFAULT_SPEED;
     this._config = config;
 
     this._objects = new ObjCollection();
 
-    this._speed = speed || DEFAULT_SPEED;
     this._maxHoldSec = config.maxHoldSec || MAX_HOLD_SEC;
     this._holdStartFactor = config.holdStartFactor || HOLD_START_FACTOR;
     this._holdRampMs = config.holdRampMs || HOLD_RAMP_MS;
@@ -80,39 +78,41 @@ class Player {
       if (event.which === 32) {
         this._hold();
       }
-      // if (event.which === 38 && !this._pressUp) {
-      //   this._pressUp = true;
-      //   this._up();
-      // }
-      // if (event.which === 40 && !this._pressDown) {
-      //   this._pressDown = true;
-      //   this._down();
-      // }
     };
 
     this._keyup = (event) => {
       if (event.which === 32) {
         this._release();
       }
-      // if (event.which === 38) {
-      //   this._pressUp = false;
-      // }
-      // if (event.which === 40) {
-      //   this._pressDown = false;
-      // }
     };
 
-    this._bindKeys();
+    this._touchstart = (event) => {
+      this._hold();
+    };
+
+    this._touchend = (event) => {
+      this._release();
+    };
+
+    this._bind();
   }
 
-  _unbindKeys () {
+  _unbind () {
     document.removeEventListener('keydown', this._keydown);
     document.removeEventListener('keyup', this._keyup);
+    document.removeEventListener('mousedown', this._touchstart);
+    document.removeEventListener('touchstart', this._touchstart);
+    document.removeEventListener('mouseup', this._touchend);
+    document.removeEventListener('touchend', this._touchend);
   }
 
-  _bindKeys () {
+  _bind () {
     document.addEventListener('keydown', this._keydown);
     document.addEventListener('keyup', this._keyup);
+    document.addEventListener('mousedown', this._touchstart);
+    document.addEventListener('touchstart', this._touchstart);
+    document.addEventListener('mouseup', this._touchend);
+    document.addEventListener('touchend', this._touchend);
   }
 
   _hold () {
@@ -159,7 +159,7 @@ class Player {
     if (this.isDead) {
       return;
     }
-    this._unbindKeys();
+    this._unbind();
     this.isDead = true;
     this._isColliding = true;
     this._isHolding = false;
@@ -170,7 +170,7 @@ class Player {
     if (this._isExploding) {
       return;
     }
-    this._unbindKeys();
+    this._unbind();
     this.isDead = true;
     this._isExploding = true;
     this._isHolding = false;
@@ -181,7 +181,7 @@ class Player {
     if (this._isExpanding) {
       return;
     }
-    this._unbindKeys();
+    this._unbind();
     this.isDead = true;
     this._isExpanding = true;
     this._isHolding = false;

@@ -1,5 +1,3 @@
-'use strict';
-
 import { ObjCollection } from '../../lib/ObjCollection';
 import { ramp, sin, easeOutCubic, easeInCubic } from '../../lib/Maths';
 
@@ -15,7 +13,6 @@ class Deaths {
     this._config = config;
     this._number = number;
 
-
     this._maxFontSize = null;
     this._fontSize = null;
 
@@ -23,7 +20,7 @@ class Deaths {
 
     this._timestamp = null;
 
-    this._requireRender = false;
+    this._requireRender = true;
 
     this.resize();
   }

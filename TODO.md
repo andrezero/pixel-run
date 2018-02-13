@@ -1,17 +1,10 @@
 # TODO
 
-- bug on demo, messages not always visible (x to exit, space to play)
-- show instructions
-- show x0 from the beggining
-- bug on score, L still visible
-- heroku
-
-- turn some messages (x to exit, space to play) into buttons
+- split out lib canvas
 
 - pause when focus lost
 - abort when focus lost for too long
 - pause
-- split out lib canvas
 - github canvas lib readme - features, todo
 - position layers
 - canvas lib tests

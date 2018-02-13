@@ -1,5 +1,3 @@
-'use strict';
-
 import { collision } from '../../lib/Maths';
 import { ObjCollection } from '../../lib/ObjCollection';
 import { makeEmitter, emitterMixin } from '../../lib/emitter';
@@ -57,19 +55,7 @@ class Button {
     this._emitter = makeEmitter();
     emitterMixin(this, this._emitter);
 
-    this._on = (event) => {
-      this._emitter.emit('on', event);
-    };
-
-    this._tap = (event) => {
-      this._emitter.emit('tap', event);
-    };
-
-    this._off = (event) => {
-      this._emitter.emit('off', event);
-    };
-
-    this._requireRender = false;
+    this._requireRender = true;
   }
 
   // -- private

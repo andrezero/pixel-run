@@ -5,35 +5,19 @@
 	<title>Hello, world!</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<style>
+	@keyframes pulse{0%{color:rgb(129,146,129);opacity:0.5}80%{color:rgb(108,169,108);opacity:1}100%{color:rgb(90,99,90);opacity:0.8}}
+	body{margin:0;padding:0;background:black;font-family:Helvetica,Helvetica,sans-serif;}
+	#loading{position:absolute;display:flex;align-items:center;justify-content:center;width:100vw;height:100vh;font-size:25px;text-shadow:0px 0px 5px rgba(255,255,255,0.5);animation:pulse 1.5s infinite;}
+	.app{position:relative;background:black;}
+	</style>
 </head>
 
 <body>
+	<div id="loading">loading</div>
 	<div class="app">
-
-		<header class="site-header">
-			<div class="container">
-				<button class="btn" id="btn-reset">reset</button>
-				<button class="btn" id="btn-intro">intro</button>
-				<button class="btn" id="btn-splash">splash</button>
-				<button class="btn" id="btn-demo">demo</button>
-				<button class="btn" id="btn-play">play</button>
-				<button class="btn" id="btn-pause">pause</button>
-				<button class="btn" id="btn-game-over">game-over</button>
-				<button class="btn" id="btn-instructions">instructions</button>
-				<button class="btn" id="btn-scores">scores</button>
-				<button class="btn" id="btn-about">about</button>
-				<button class="btn" id="btn-credits">credits</button>
-			</div>
-		</header>
-
 		<section id="game-container"></section>
-
-		<footer class="site-footer">
-			<div class="container"> footer </div>
-		</footer>
-
 	</div>
-
 </body>
 
 </html>

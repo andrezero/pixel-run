@@ -1,5 +1,3 @@
-'use strict';
-
 // http://thecodeplayer.com/walkthrough/matrix-rain-animation-html5-layer-javascript
 
 import { ObjCollection } from '../../lib/ObjCollection';
