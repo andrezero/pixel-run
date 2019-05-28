@@ -30,6 +30,19 @@ class Button {
     const overFn = (evt) => collision([evt.x, evt.y, 0, 0], this._label._rect);
     this._interactive = new Interactive(this._layer, overFn, 'pointer');
 
+    this._initEVentListeners();
+
+    this._objects.add(this._interactive);
+
+    this._emitter = makeEmitter();
+    emitterMixin(this, this._emitter);
+
+    this._requireRender = true;
+  }
+
+  // -- private
+
+  _initEVentListeners () {
     this._interactive.on('down', () => {
       this._configure(this._configOn);
     });
@@ -49,16 +62,7 @@ class Button {
     this._interactive.on('out', (event) => {
       this._configure(this._configOut);
     });
-
-    this._objects.add(this._interactive);
-
-    this._emitter = makeEmitter();
-    emitterMixin(this, this._emitter);
-
-    this._requireRender = true;
   }
-
-  // -- private
 
   _configure (config) {
     this._currentConfig = config;
@@ -92,6 +96,7 @@ class Button {
 
   destroy () {
     this._emitter.destroy();
+    this._interactive.destroy();
   }
 }
 

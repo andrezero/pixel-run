@@ -1,35 +1,23 @@
+// Place your settings in this file to overwrite the default settings
 {
-  // When opening a file, `editor.tabSize` and `editor.insertSpaces` will be detected based on the file contents.
-  "editor.detectIndentation": true,
-  // The number of spaces a tab is equal to. This setting is overriden based on the file contents when `editor.detectIndentation` is on.
   "editor.tabSize": 2,
-  // Inserting and deleting whitespace follows tab stops
-  "editor.useTabStops": true,
-  // Controls how the editor should render whitespace characters, possibilities are 'none', 'boundary', and 'all'. The 'boundary' option does not render single spaces between words.
-  "editor.renderWhitespace": "all",
-  // Insert spaces when pressing Tab. This setting is overriden based on the file contents when `editor.detectIndentation` is on.
   "editor.insertSpaces": true,
-  // Controls if the editor should automatically format the line after typing
   "editor.formatOnType": false,
-  // Controls if the editor should automatically format the pasted content. A formatter must be available and the formatter should be able to format a range in a document.
-  "editor.formatOnPaste": true,
-  // Format a file on save. A formatter must be available, the file must not be auto-saved, and editor must not be shutting down.
+  "editor.formatOnPaste": false,
   "editor.formatOnSave": false,
-  // Enable/disable default JavaScript formatter.
-  "javascript.format.enable": false,
-  // Controls whether eslint is enabled for JavaScript files or not.
-  "eslint.enable": true,
-  // Turns auto fix on save on or off.
-  "eslint.autoFixOnSave": true,
-  // An array of language ids which should be validated by ESLint
-  "eslint.validate": [
-    "javascript",
-    "json"
-  ],
-  // When enabled, insert a final new line at the end of the file when saving it.
+  "files.exclude": {
+    "**/.git": true,
+    "**/coverage": true,
+    "**/node_modules": true
+  },
+  "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
-  // Configure glob patterns for excluding files and folders in searches. Inherits all glob patterns from the files.exclude setting.
   "search.exclude": {
+    "**/.git": true,
+    "**/node_modules": true,
+    "**/coverage": true,
     "**/dist": true
-  }
+  },
+  "eslint.run": "onSave",
+  "eslint.autoFixOnSave": true
 }
