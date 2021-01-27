@@ -4,6 +4,10 @@
 
 Built with vanilla JS. When I was teaching the [Web Development course](https://www.ironhack.com/en/web-development) at Ironhack Barcelonam, all students had to build a game after only 2 weeks of curriculum. I had a lot of fun helping them and eventually playing their games. At some point I felt a bit jealous so I built one myself.
 
+## WARNING: This code is not maintained
+
+Very obvious - but due - WARNING: I will try to keep this clean and free from vulnerabilities, but use at your own risk ;-)
+
 ## How to play
 
 - Just press space (or tap and hold) to slow down the pixel. 
