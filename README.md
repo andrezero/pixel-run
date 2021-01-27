@@ -8,16 +8,16 @@ Built with vanilla JS. When I was teaching the [Web Development course](https://
 
 Very obvious - but due - WARNING: I will try to keep this clean and free from vulnerabilities, but use at your own risk ;-)
 
-## How to play
+## Play it now: https://andrezero.github.io/pixel-run/
 
-- Just press space (or tap and hold) to slow down the pixel. 
+- Just press space (or tap and hold) to slow down the pixel.
 - Tip: Slow down early to accelerate sooner
 - If you slow down for too long you will kill the pixel
 
 ### How to win:
 
 - There are only 5 levels and you have 3 minutes to complete all levels.
-- You can die as many times as you want. 
+- You can die as many times as you want.
 - Finishing early and with less kills will give you bonus points.
 
 
