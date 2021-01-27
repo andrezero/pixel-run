@@ -50,7 +50,7 @@ var CONFIG = {
     },
     credits: {}
   },
-  assets: ['../assets/pixel.woff']
+  assets: ['./assets/pixel.woff']
 };
 
 export {
